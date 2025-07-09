@@ -12,6 +12,8 @@ public class Main {
 		Scanner sc = new Scanner(System.in);
 		N = sc.nextInt();
 
+		// boolean은 다 false로 초기화됨
+
 		col = new boolean[N];
 		diag1 = new boolean[2 * N - 1];
 		diag2 = new boolean[2 * N - 1];

@@ -1,49 +1,64 @@
-import java.io.*;
 import java.util.*;
+import java.io.*;
 
 public class Main {
-    public static void main(String[] args) throws IOException {
-        //일단 문자의 입력을 받아야하기 때문에, 효율이 제일 좋은 BufferedReader을 사용한다.
-        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        // BufferedReaderd을 읽을때, 무조건 throws IOException을 명시해주어야한다.
-        String s = br.readLine();
-
-        // 스택 선언 제네릭 타입 String
-        // 단어를 뒤집기 위해서 문자들을 저장하는 스택
-        // check: 현재 태그 내부에 있는지 여부를 저장하는 부울 변수
-
-        Stack<Character> stack = new Stack<>();
-        boolean inTag = false; // 태그 내부인지 체크 <의 시작과 >의 끝을 알리기 위한 장치
 
 
-        for (int i = 0; i < s.length(); i++) {
-            char currentChar = s.charAt(i);
-            if (currentChar == '<') {
-                print(stack);
-                inTag = true;
-                System.out.print(currentChar); // 태그 시작문자(<)를 출력
-            } else if (currentChar == '>') { // 태그가 닫힌다면
-                inTag = false;
-                System.out.print(currentChar);
-            } else if (inTag) {
-                System.out.print(currentChar); // 태그안에 들어왔으므로 스택에 저장하지 않고 그대로 출력
-            } else { // 태크 외부 문자라면
-                if (currentChar == ' ') {//공백문자라면
-                    print(stack); //이전 단어를 뒤집어서 출력
-                    System.out.print(currentChar);
-                } else { //그냥 일반단어라면 스택에 저장
-                    stack.push(currentChar);
+	public static void main(String[] args) throws IOException {
+		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 
-                }
-            }
-        }
+		String s = br.readLine();
+
+		StringBuilder ans = new StringBuilder(); // 최종 답안
+
+		StringBuilder word = new StringBuilder(); // <> 태크 밖의 뒤집을 단어들을 모아놓는 스트링 빌더
 
 
-        print(stack);}
-    public static void print(Stack<Character> stack){
-        while(!stack.isEmpty()){ // 스택이 비어있는가?의 반대
-            System.out.print(stack.pop()); // 스택이 안비어져 있으면 스택에서 계속 문자를 추출
-        }
-    }
+		boolean inTag = false; // 현재 포인터가 태그 안에 들어와 있는지
 
+		for(int i = 0; i < s.length(); i++) {
+
+			// 태그를 시작하는 <를 만나면
+			if(s.charAt(i) == '<') {
+				//  태그 시작 직전까지의 단어들은 먼저 뒤집어 붙인다
+				if(word.length() > 0) {
+					ans.append(word.reverse());
+					word.setLength(0);
+				}
+
+				// 이제 부터는 태그 안에 들어와있음  reverse  대상자 아님
+				inTag = true;
+				ans.append(s.charAt(i));
+
+			} else if(s.charAt(i) == '>') {
+				inTag = false;
+				ans.append(s.charAt(i));   // '>' 자체는 그대로
+
+			} else if(inTag) { // 태그안 : 어떤 문자든 그대로 복사함
+				ans.append(s.charAt(i));
+
+			} else {
+				// 태그 밖의 구간(뒤집기 대상)
+
+				if(s.charAt(i) == ' ') {
+					// 공백은 단어의 공백임, 지금까지 모인 단어를 뒤집고, 공백도 그대로,
+					ans.append(word.reverse());
+					word.setLength(0);
+					ans.append(' ');
+				} else {
+					//단어를 빌더에 계속 모음
+					word.append(s.charAt(i));
+				}
+			}
+
+		}
+
+		// 문자열이 끝났는데, 단어 버퍼가 남아있으면, 마저 뒤집기
+		if(word.length() > 0) {
+			ans.append(word.reverse());
+
+		}
+		System.out.println(ans);
+
+	}
 }

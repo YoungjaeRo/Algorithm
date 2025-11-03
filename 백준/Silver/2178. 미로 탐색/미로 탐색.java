@@ -1,68 +1,90 @@
 import java.util.*;
 import java.io.*;
 
+
 public class Main {
 	static int N;
 	static int M;
-	static int[][] map;
-	static boolean[][] visited;
-	static int[] dx = {-1 , 1, 0, 0}; // 상하좌우
-	static int[] dy = {0, 0, -1, 1};
 
+	static int[][] map;
+
+	// 동서남북
+	static int[] dx = {0, 0, 1, -1};
+	static int[] dy = {1, -1, 0, 0};
+
+
+	static class Point {
+		int r;
+		int c;
+		 Point (int r, int c) {
+			 this.r = r;
+			 this.c = c;
+		 }
+	}
 
 	public static void main(String[] args) throws Exception {
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-		StringTokenizer st;
-		
-		st = new StringTokenizer(br.readLine());
-		
+
+		StringTokenizer st = new StringTokenizer(br.readLine());
+
 		N = Integer.parseInt(st.nextToken());
 		M = Integer.parseInt(st.nextToken());
 
-		map = new int[N][M];
-		visited = new boolean[N][M];
 
+		// 그래프 초기화 ㅇㅇ
+		map = new int[N][M];
 
 		for(int i = 0; i < N; i++) {
-			String line = br.readLine();
+			String numbers = br.readLine();
+
 			for(int j = 0; j < M; j++) {
-				map[i][j] = line.charAt(j) - '0';
+				map[i][j] = numbers.charAt(j) - '0'; // 문자열로 들어온 숫자를 int 형으로 반환하게 해줌
 			}
 		}
 
-		BFS(0, 0);
-
-		System.out.println(map[N - 1] [M - 1]);
-
+		int answer = bfs(); // 0,0에서 마지막 칸 까지 최단 칸수
+		System.out.println(answer);
 
 	}
 
-	static void BFS(int x, int y) {
-		Queue<int[]> q= new LinkedList<>();
-		q.add(new int[] {x, y}); // 큐에 시작 노드를 넣어주기
-		visited[x][y] = true; //  재방문 방지를 위해 true로 바꿔주기
+	static int bfs() {
+		int[][] dist = new int[N][M]; // 0이면 미방문, 그 외는 거리수 더하기
+		Deque <Point> q = new ArrayDeque<>();
+
+		//시작
+		dist[0][0] = 1;
+		q.offer(new Point(0, 0));
 
 		while(!q.isEmpty()) {
-			int[] now = q.poll();
-			int cx = now[0];
-			int cy = now[1];
-
-			for(int i = 0; i < 4; i++) {
-				int nx = cx + dx[i];
-				int ny = cy + dy[i];
+			Point cur = q.poll();
 
 
-				if(nx >= 0 && ny >= 0 && nx < N && ny < M) {
-					if(!visited[nx][ny] && map[nx][ny] == 1) {
-						visited[nx][ny] = true;
-						map[nx][ny] = map[cx][cy] + 1;
-						q.add(new int[] {nx, ny});
-					}
-				}
+			// 도착지에 왔다면, 거리를 변환
+			if(cur.r == N - 1 && cur.c == M - 1) {
+				return dist[cur.r][cur.c];
 			}
 
+			// 4방향 탐색 시작
+			for(int i = 0; i < 4; i++) {
+				int nr = cur.r + dx[i];
+				int nc = cur.c + dy[i];
+
+
+				// 밤위, 벽, 방문 여부 검사 ㄱㄱ
+				if(nr < 0 || nr >= N || nc < 0 || nc >= M) {
+					continue;
+				}
+
+				//벽과 이미 방문한 좌표는 방문 안함
+				if(map[nr][nc] == 0 || dist[nr][nc] != 0) {
+					continue;
+				}
+
+				dist[nr][nc] = dist[cur.r][cur.c] + 1;
+				q.offer(new Point(nr, nc));
+
+			}
 		}
-
+		return 0; // 도착 불가시
 	}
-
 }

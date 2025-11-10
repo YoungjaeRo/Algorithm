@@ -2,85 +2,89 @@ import java.util.*;
 import java.io.*;
 
 public class Main {
-
-	static int n; // 세로 (행)
-	static int m; // 가로 (열)
+	static int N; // 행
+	static int M; // 열
 
 	static int[][] map;
 	static boolean[][] visited;
 
-	// 동, 서, 남, 북
-	static int[] dx = {0, 0, 1, -1};
-	static int[] dy = {1, -1, 0, 0};
+	static int[] dx = {-1, 1, 0, 0};
+	static int[] dy = {0, 0, -1, 1};
 
-	static int count = 0;
-	static int maxArea = 0;
+	static int count;
 
-	static class Point {
-		int x;
-		int y;
+	static int max;
 
-		Point(int x, int y) {
-			this.x = x;
-			this.y = y;
+	public static void main(String[] args) throws Exception {
+	BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+
+	StringTokenizer st = new StringTokenizer(br.readLine());
+
+	N = Integer.parseInt(st.nextToken());
+	M = Integer.parseInt(st.nextToken());
+
+	map = new int[N][M];
+	visited = new boolean[N][M];
+
+
+	// 그래프 초기화
+	for(int i = 0; i < N; i++) {
+		st = new StringTokenizer(br.readLine());
+
+		for(int j = 0; j < M; j++) {
+			map[i][j] = Integer.parseInt(st.nextToken());
+
 		}
 	}
 
-	public static void main(String[] args) throws IOException {
-		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-		StringTokenizer st = new StringTokenizer(br.readLine());
-
-		n = Integer.parseInt(st.nextToken());
-		m = Integer.parseInt(st.nextToken());
-
-		map = new int[n][m];
-		visited = new boolean[n][m];
-
-		// 입력 받기
-		for (int i = 0; i < n; i++) {
-			st = new StringTokenizer(br.readLine());
-			for (int j = 0; j < m; j++) {
-				map[i][j] = Integer.parseInt(st.nextToken());
-			}
-		}
-
-		// 전체 탐색
-		for (int i = 0; i < n; i++) {
-			for (int j = 0; j < m; j++) {
-				if (map[i][j] == 1 && !visited[i][j]) {
+	// 탐색하면서, 시작점 찾기
+		for(int i = 0; i < N; i++) {
+			for(int j = 0; j < M; j++) {
+				if(map[i][j] == 1 && !visited[i][j]) {
 					int area = bfs(i, j);
 					count++;
-					maxArea = Math.max(maxArea, area);
+
+					if(area > max) {
+						max = area;
+					}
 				}
 			}
 		}
 
 		System.out.println(count);
-		System.out.println(maxArea);
+		System.out.println(max);
+
 	}
 
-	static int bfs(int x, int y) {
-		Queue<Point> q = new LinkedList<>();
-		q.offer(new Point(x, y));
-		visited[x][y] = true;
+	static int bfs(int i, int j) {
+		ArrayDeque<int[]> q = new ArrayDeque<>();
 
-		int area = 1;  // 시작점 포함
+		visited[i][j] = true;
+		q.offer(new int[]{i, j});
 
-		while (!q.isEmpty()) {
-			Point p = q.poll();
+		int area = 1;
 
-			for (int i = 0; i < 4; i++) {
-				int nx = p.x + dx[i];
-				int ny = p.y + dy[i];
+		while(!q.isEmpty()) {
+			int[] cur = q.poll();
 
-				if (nx < 0 || ny < 0 || nx >= n || ny >= m)
+			int r = cur[0];
+			int c = cur[1];
+
+			for(int d = 0; d < 4; d++) {
+				int nx = r + dx[d];
+				int ny = c + dy[d];
+
+				if(nx < 0 || nx >= N || ny < 0 || ny >= M) {
 					continue;
-
-				if (map[nx][ny] == 1 && !visited[nx][ny]) {
-					q.offer(new Point(nx, ny));
-					visited[nx][ny] = true;
-					area++;
 				}
+
+				if(map[nx][ny] == 0 || visited[nx][ny]) {
+					continue;
+				}
+
+				visited[nx][ny] = true;
+				q.offer(new int[]{nx, ny});
+				area++;
 			}
 		}
 

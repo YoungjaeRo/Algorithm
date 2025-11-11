@@ -1,30 +1,30 @@
+import java.util.*;
+import java.io.*;
+
+
+
 class Solution {
     public String solution(String number, int k) {
-		// StringBuilder를 '스택'처럼 사용 (push: append, pop: deleteCharAt)
-
-		StringBuilder stack = new StringBuilder();
-
-		int remove = k; // 제거할 수 있는 수의 개수
-
-		for(int i = 0; i < number.length(); i++) {
-			char cur = number.charAt(i);
-
-			// 뒤에서 더 큰 숫자(cur)가 왔으니,
-			// 앞에 있던 작은 숫자들을 가능한 만큼 제거한다.
-
-			while(remove > 0 && stack.length() > 0 && stack.charAt(stack.length() - 1) < cur) {
-			stack.deleteCharAt(stack.length() -1); //pop
-				remove --;
-			}
-			
-			stack.append(cur); // 현재 숫자 채텍
-		}
+        StringBuilder sb = new StringBuilder(); // 남길 숫자들을 담을 스택
         
-        // 모든 숫자가 내림차순이어서 아에 못지운 경우, 뒤에서 추가로 잘라내기
-		if(remove > 0) {
-			stack.setLength(stack.length() - remove);
-		}
-		
-		return stack.toString();
-	}
+        for(int i = 0; i < number.length(); i++) {
+            char c = number.charAt(i);
+            
+            // 스택에 현재 들어있는 숫자가 지금 숫자보다 작으면 빼버림
+            
+            while(k > 0 && sb.length() > 0 && sb.charAt(sb.length() - 1) < c) {
+                sb.deleteCharAt(sb.length() - 1);
+                k--;
+            }
+            
+            sb.append(c);
+        }
+        
+        // 아직 못뺀 K가 남아있으면 뒤에서부터 잘라보기
+        if(k > 0) {
+            sb.setLength(sb.length() - k);
+        }
+        
+        return sb.toString();
+    }
 }

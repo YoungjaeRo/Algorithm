@@ -2,60 +2,72 @@ import java.io.*;
 import java.util.*;
 
 public class Main {
-	static int N;
 	static Stack<Integer> stack;
-
-	public static void main(String[] args) throws IOException {
-		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-		StringBuilder sb = new StringBuilder();
-
-		N = Integer.parseInt(br.readLine());
-		stack = new Stack<>();
-
-		while(N-- > 0) {
-			String line = br.readLine();
-			String[] cmds = line.split(" ");
-			String cmd = cmds[0];
-
-			switch(cmd) {
-				case "push" :
-					stack.push(Integer.parseInt(cmds[1]));
-					break;
-
-				case "pop" :
-					if(stack.isEmpty()) {
-						System.out.println("-1");
-					} else {
-						int num = stack.pop();
-						System.out.println(num);
-					}
-					break;
-
-
-				case "size" :
-					System.out.println(stack.size());
-					break;
-
-				case "empty" :
-					if(stack.isEmpty()) {
-						System.out.println("1");
-					} else {
-						System.out.println("0");
-					}
-					break;
-
-				case "top" :
-					if(stack.isEmpty()) {
-						System.out.println("-1");
-					} else {
-						System.out.println(stack.peek());
-					}
-					break;
-
-				default :
-					continue;
- 			}
-		}
-
-	}
+	
+	
+	 public static void main(String[] args) throws Exception {
+		 BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+	     
+	     int N = Integer.parseInt(br.readLine());
+	     
+	     int[] stack = new int[N];
+	     
+	     // 매우 중요
+	     int top = -1;
+	     
+	     while(N -- > 0) {
+	    	 
+	    	 String line = br.readLine();
+	    	 
+	    	 String[] cmds = line.split(" ");
+	    	 
+	    	 String cmd = cmds[0];
+	    	 
+	    	 switch(cmd) {
+	    	 
+	    	 case "push" :
+	    		 int num = Integer.parseInt(cmds[1]);
+	    		 
+	    		 top++; // 꼭 먼저 탑을 증가시켜줌
+	    		 
+	    		 stack[top] = num;
+	    		 
+	    		 break;
+	    	
+	    	 case "pop" : 
+	    		 
+	    		if(top == -1) {
+	    			System.out.println(-1);
+	    		} else {
+	    			System.out.println(stack[top]);
+	    			top--;	
+	    		}
+	    		break;
+	    	 
+	    	 case "size" :
+	    		 System.out.println(top + 1);
+	    		 break;
+	    		 
+	    	 case "empty" :
+	    		 if(top == -1) {
+	    			 System.out.println(1);
+	    		 } else {
+	    			 System.out.println(0); 
+	    		 }
+	    		 
+	    		 break;
+	    	
+	    	 case "top" :
+	    		 if(top == -1) {
+	    			 System.out.println(-1);
+	    		 } else {
+	    			 System.out.println(stack[top]);
+	    		 }
+	    		 
+	    		 break;
+	    	 }
+	    	 
+	    	 
+	     }
+	 }
 }

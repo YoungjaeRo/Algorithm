@@ -44,18 +44,27 @@ public static void main(String[] args) throws Exception {
 	
 	// 탐색하면서 dfs로 시작 ㄱㄱ
 		
-	 	dfs(1);
+	 	bfs (1);
 		System.out.println(count);
 	}
 
-static void dfs(int now) {
+static void bfs (int now) {
+		Queue<Integer> q = new LinkedList<>();
 		visited[now] = true;
 		
-		for(int next : arrlist[now]) {
-			if(!visited[next]) {
-				count++;
-				dfs(next);
+		q.add(now);
+		
+		while(!q.isEmpty()) {
+			int cur = q.poll();
+			
+			for(int next : arrlist[cur]) {
+				if(!visited[next]) {
+					count++;
+					visited[next] = true;
+					q.add(next);
+				}
 			}
 		}
+			
 	}
 }

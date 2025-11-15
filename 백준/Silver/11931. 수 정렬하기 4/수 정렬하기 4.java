@@ -18,18 +18,21 @@ public class Main {
 
 		}
 
-		// 오름차순으로 정렬
-		Arrays.sort(arr);
-		
-		// 출력을 빠르게 하기 위해서 
-		StringBuilder sb = new StringBuilder();
+		List<Integer> list = new ArrayList<>();
 
-		
-		for(int i = N - 1; i >= 0; i--) {
-			sb.append(arr[i]).append('\n');
+		// 정렬하기 위해서 list에 담음
+		for(int a : arr) {
+			list.add(a);
 		}
 
-		System.out.println(sb);
+		Collections.sort(list, Collections.reverseOrder());
+
+		StringBuilder sb = new StringBuilder();
 		
+		for(int ans : list) {
+			sb.append(ans).append("\n");
+		}
+        System.out.print(sb);
+
 	}
 }

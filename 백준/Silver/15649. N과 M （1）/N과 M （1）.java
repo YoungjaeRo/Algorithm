@@ -1,57 +1,55 @@
-import java.io.*;
 import java.util.*;
+import java.io.*;
 
 
 public class Main {
-	/**
-	 * 1부터 N까지 숫자 중에서  중복없이 M개를 뽑는 모든 순열
-	 */
+	static int N;
+	static int M;
+	
+	static int[] arr; // 뽑은 숫자들을 저장할 배열 (길이 M)
+	
+	static boolean[] visited; // 숫자 사용 여부 체크 (1 ~ N)
+	
+	public static void main(String[] args) throws Exception {
+		 BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+		 StringTokenizer st = new StringTokenizer(br.readLine());
 
-
-	static int N, M;
-
-	static boolean[] visited; // 방문 체크 배열
-
-	static int[] result; // 정답 출력 배열
-
-	public static void main(String[] args) {
-		Scanner sc = new Scanner(System.in);
-
-
-		N = sc.nextInt();
-		M = sc.nextInt();
-
-		visited = new boolean[N + 1];
-		result = new int[M];
-
-		backTrack(0);
-
+		        N = Integer.parseInt(st.nextToken());
+		        M = Integer.parseInt(st.nextToken());
+		        
+		        arr = new int[M];
+		        
+		        visited = new boolean[N + 1]; // 1 ~ N까지 쓰기 위해서        
+		        
+		        dfs(0);
 	}
-
-	static void backTrack(int depth) {
-		if(depth == M) {
-			// 수열이 조건에 부합하게 꽉차면 출력
+	
+	static void dfs(int depth) {
+		if(depth == M) { // 숫자를 다 사용했으면,
+			
 			for(int i = 0; i < M; i++) {
-				System.out.print(result[i] + " ");
+				System.out.print(arr[i] + " ");
 			}
-
 			System.out.println();
 			return;
-
 		}
-
-		// 1부터 N까지 모든 수를 하나씩 시도한다
-		for(int i = 1; i <= N; i++) {
-			if(!visited[i]) { // 아직 사용되지 않은 수라면
-				visited[i] = true; // 사용되었다고 처리
-				result[depth] = i; // 현재 위치에 수를 저장
-
-				backTrack(depth + 1);// 다음 위치를 채우기 위해 depth + 1로 백트래킹 재귀호출
-				visited[i] = false; // 매우 중요 : 재귀 함수가 다 끝이나, 돌아온 후에는 숫자 사용처리 원상복구 (백트래킹 핵심)
+		
+		
+		for(int i = 1; i <= N; i++) { // 1 ~ N까지 숫자 중에서 이번 자리(depth)에 올 숫자 고르기
+			if(visited[i]) {
+				continue;
 			}
+			
+			//i 를 이번에 사용할 예정
+			visited[i] = true;
+			arr[depth] = i;
+			
+			// 다음 자리 수 채우러 감
+			dfs(depth + 1);
+			visited[i] = false; // 백트래킹
+			
 		}
 	}
-
-
+	
 
 }

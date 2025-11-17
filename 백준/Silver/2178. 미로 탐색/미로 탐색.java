@@ -1,42 +1,31 @@
-import java.util.*;
 import java.io.*;
+import java.util.*;
 
 public class Main {
 	static int N;
 	static int M;
 
 	static int[][] map;
-	static int[][] dist;
+	static int[][] dist; // 해당 칸까지의 최단 거리
 
 	static boolean[][] visited;
 
-	// 상, 하, 좌, 우
-	static final int[] dr = {-1, 1, 0, 0};
-	static final int[] dc = {0, 0, -1, 1};
+	static int[] dx = {-1, 1, 0, 0};
+	static int[] dy = {0, 0, -1, 1};
 
-	static class Point {
-		int r;
-		int c;
-
-		Point(int r, int c) {
-			this.r = r;
-			this.c = c;
-
-		}
-	}
 	public static void main(String[] args) throws Exception {
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-		StringTokenizer st = new StringTokenizer(br.readLine());
 
+		StringTokenizer st = new StringTokenizer(br.readLine());
 		N = Integer.parseInt(st.nextToken());
 		M = Integer.parseInt(st.nextToken());
 
 		map = new int[N][M];
 		dist = new int[N][M];
+
 		visited = new boolean[N][M];
 
-
-		//  공백 없이 붙은 문자열을 입력 받음 ㅇㅇ
+		// 그래프에 숫자 정보 입력함
 		for(int i = 0; i < N; i++) {
 			String numbers = br.readLine();
 
@@ -45,45 +34,38 @@ public class Main {
 			}
 		}
 
-		System.out.println(bfs());
+		bfs(0, 0);
 
+		System.out.println(dist[N-1][M-1]);
 	}
 
-	static int bfs() {
-		ArrayDeque<Point> q = new ArrayDeque<>();
-		visited[0][0] = true;
-		dist[0][0] = 1; // 시작 칸 포함함
+	static void bfs(int x, int y) {
+		ArrayDeque<int[]> q = new ArrayDeque<>();
 
-		q.offer(new Point(0, 0));
+		visited[x][y] = true;
+		dist[x][y] = 1;
+
+		q.offer(new int[]{x, y});
 
 		while(!q.isEmpty()) {
-
-			Point cur = q.poll();
-			
-			if(cur.r == N - 1 && cur.c == M - 1) {
-				return dist[cur.r][cur.c];
-			}
+			int[] cur = q.poll();
+			int curX = cur[0];
+			int curY = cur[1];
 
 			for(int i = 0; i < 4; i++) {
-				int nr = cur.r + dr[i];
-				int nc = cur.c + dc[i];
+				int nX = curX + dx[i];
+				int nY = curY + dy[i];
 
-				if(nr < 0 || nr >= N || nc < 0 || nc >= M) {
+				if(nX < 0 || nX >= N || nY < 0 || nY >= M) {
 					continue;
 				}
 
-				if(map[nr][nc] == 0 || visited[nr][nc]) {
-					continue;
+				if(visited[nX][nY] == false && map[nX][nY] != 0) {
+					dist[nX][nY] = dist[curX][curY] + 1;
+					visited[nX][nY] = true;
+					q.offer(new int[] {nX, nY});
 				}
-
-				visited[nr][nc] = true;
-				dist[nr][nc] = dist[cur.r][cur.c] + 1; // 한칸을 이동했기 때문에
-
-				q.offer(new Point(nr, nc));
 			}
-
 		}
-
-		return 0;
 	}
 }

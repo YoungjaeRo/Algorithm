@@ -2,70 +2,70 @@ import java.io.*;
 import java.util.*;
 
 public class Main {
-    public static void main(String[] args) throws IOException {
-        // 사용자의 입력을 한줄 씩 읽어오기 위해, BufferedReader을 사용
-        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+	static int N;
+	public static void main(String[] args) throws Exception {
+		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+		StringTokenizer st;
+		StringBuilder sb = new StringBuilder();
 
-        // 문자열을 쉽게 조작하기 위해 StringBuilder를 사용
-        StringBuilder sb = new StringBuilder();
+		N = Integer.parseInt(br.readLine());
 
-        // br.readLine()을 통해 한줄을 읽어오고, 정수로 변환
-        int n = Integer.parseInt(br.readLine());
-        int back = 0;
+		// 양 방향 큐
+		ArrayDeque<Integer> q = new ArrayDeque<>();
 
-        Queue<Integer> queue = new ArrayDeque<>();
-        for(int i = 0; i < n; i++){
-            StringTokenizer st = new StringTokenizer(br.readLine());
-            String s = st.nextToken();
+		for(int i = 0; i < N; i++) {
 
-            switch (s){
-                case "push" :
-                    int x = Integer.parseInt(st.nextToken());
-                    queue.add(x);
-                    back = x;
-                    break;
+			st = new StringTokenizer(br.readLine());
 
-                case "pop" :
-                    if(queue.isEmpty()){
-                        sb.append(-1).append("\n");
-                    } else {
-                        sb.append(queue.poll()).append("\n");
-                    }
-                    break;
+			String command = st.nextToken();
 
-                case "size" :
-                    sb.append(queue.size()).append("\n");
-                    break;
+			switch(command) {
+				case "push" :
+				String num = st.nextToken(); // 1
+					q.offer(Integer.parseInt(num));
+				break;
 
-                case "empty" :
-                    if(queue.isEmpty()){
-                        sb.append(1).append("\n");
-                    } else {
-                        sb.append(0).append("\n");
-                    }
-                    break;
+				case "pop" :
+					if(q.isEmpty()) {
+						sb.append("-1").append("\n");
+					} else {
+						int first = q.pollFirst();
+						sb.append(first).append("\n");
+					}
+					break;
 
-                case "front" :
-                    if(queue.isEmpty()){
-                        sb.append(-1).append("\n"); // 오타 수정
-                    } else {
-                        sb.append(queue.peek()).append("\n");
-                    }
-                    break;
+				case "size" :
+					sb.append(q.size()).append("\n");
+					break;
 
-                case "back" :
-                    if(queue.isEmpty()){
-                        sb.append(-1).append("\n");
-                    } else {
-                        sb.append(back).append("\n");
-                    }
-                    break; // break 추가
+				case "empty" :
+					if(q.isEmpty()) {
+						sb.append("1").append("\n");
+					} else {
+						sb.append("0").append("\n");
+					}
+					break;
 
-                default:
-                    //모든 case에 해당하지 않는 경우, 실행되는 코드이다.
-                    break;
-            }
-        }
-        System.out.println(sb);
-    }
+				case "front" :
+					if(q.isEmpty()) {
+						sb.append("-1").append("\n");
+					} else {
+						sb.append(q.peekFirst()).append("\n");
+					}
+					break;
+
+				case "back" :
+					if(q.isEmpty()) {
+						sb.append("-1").append("\n");
+					} else {
+						sb.append(q.peekLast()).append("\n");
+					}
+					break;
+
+				default :
+					break;
+			}
+		}
+		System.out.println(sb.toString());
+	}
 }

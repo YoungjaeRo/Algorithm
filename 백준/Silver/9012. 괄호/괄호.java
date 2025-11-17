@@ -1,59 +1,41 @@
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.io.IOException;
-import java.util.Stack;
+import java.util.*;
+import java.io.*;
 
 public class Main {
+	public static void main(String[] args) throws Exception {
+		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+		StringBuilder sb = new StringBuilder();
 
-    public static void main(String[] args) throws IOException {
+		int T = Integer.parseInt(br.readLine()); // 테스트 케이스 개수
 
-        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        StringBuilder sb = new StringBuilder();
+		while(T-- > 0) {
+			String s = br.readLine();
 
-        int T = Integer.parseInt(br.readLine());
+			Stack<Character> stack = new Stack<>();
 
-        for(int i = 0; i < T; i++) {
-            sb.append(solve(br.readLine())).append('\n');
-        }
+			boolean isOk = true;
 
-        System.out.println(sb);
-    }
+			for(char c : s.toCharArray()) {
+				if(c == '(') {
+					stack.push(c);
+				} else {
+					// c == ')'
+					// 닫는 괄호인데 매칭할 '(' 가 없으면 바로 NO
+					if(stack.isEmpty()) {
+						isOk = false;
+						break;
+					}
+					// '('이 있다면
+					stack.pop(); // 정상적으로 짝이 맞기 때문에 하나 제거
+				}
+			}
 
-    public static String solve(String s) {
-
-        Stack<Character> stack = new Stack<>();
-
-        for (int i = 0; i < s.length(); i++) {
-
-            char c = s.charAt(i);
-
-            // 여는 괄호일 경우 스택에 넣는다.
-            if (c == '(') {
-                stack.push(c);
-            }
-
-            // 아래는 모두 닫는 괄호 일 경우들이다.
-
-            // 스택이 비어있는 경우. 즉, 닫는 괄호를 입력받았으나 pop할 원소가 없을 경우
-            else if (stack.empty()) {
-                return "NO";
-            }
-            // 그 외의 경우 stack 원소를 pop 한다.
-            else {
-                stack.pop();
-            }
-        }
-
-        /*
-         * 모든 검사 마치고 스택에 잔여 요소가 있으면 여는 괄호가 많은 경우는 "NO"
-         * 스택이 비어있으면 온전한 수식이므로 "YES" 이다.
-         */
-
-        if (stack.empty()) {
-            return "YES";
-        }
-        else {
-            return "NO";
-        }
-    }
+				if(!isOk || !stack.isEmpty()) {
+					sb.append("NO\n");
+				} else {
+					sb.append("YES\n");
+				}
+		}
+		System.out.println(sb);
+	}
 }

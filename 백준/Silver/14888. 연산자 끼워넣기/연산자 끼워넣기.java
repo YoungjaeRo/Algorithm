@@ -1,78 +1,84 @@
-import java.util.*;
 import java.io.*;
+import java.util.*;
 
 public class Main {
-	static int N;
-	static int[] nums;
+	static int N; // 수의 개수
+	static int[] nums; // 숫자들
+	static int[] ops = new int[4]; // 쁠마곱나
+
 	static int max = Integer.MIN_VALUE;
 	static int min = Integer.MAX_VALUE;
-	
+
+
 	public static void main(String[] args) throws Exception {
-		 BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-	     StringTokenizer st;
+		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+		StringTokenizer st;
 
-	     N = Integer.parseInt(br.readLine());
+		N = Integer.parseInt(br.readLine());
+		nums = new int[N];
 
-	     nums = new int[N];
-	     
-	     // 숫자들 입력
-	     st = new StringTokenizer(br.readLine());
-	        for (int i = 0; i < N; i++) {
-	            nums[i] = Integer.parseInt(st.nextToken());
-	        }
-	        
-	        // 연산자 개수 입력: +, -, *, /
-	        st = new StringTokenizer(br.readLine());
-	        int plus  = Integer.parseInt(st.nextToken());
-	        int minus = Integer.parseInt(st.nextToken());
-	        int mul   = Integer.parseInt(st.nextToken());
-	        int div   = Integer.parseInt(st.nextToken());
-	        
-	        // 첫 숫자에서 시작함
-	        dfs(1, nums[0], plus, minus, mul, div);
-	        
-	       StringBuilder sb = new StringBuilder();
-	       sb.append(max).append("\n").append(min);
-	       
-	       System.out.print(sb);
-	        
+		st = new StringTokenizer(br.readLine());
+
+		// 숫자 값을 입력함 ㅇㅇ
+		for(int i = 0; i < N; i++) {
+			nums[i] = Integer.parseInt(st.nextToken());
+		}
+
+		st = new StringTokenizer(br.readLine());
+
+		for (int i = 0; i < 4; i++) {
+			ops[i] = Integer.parseInt(st.nextToken()); // + - * / 순서
+		}
+		// 연산자는 총 N-1개, 연산자를 기준으로 DFS 돈다고 생각
+		// idx = 0부터 시작 (0번째 연산자 선택 중), current = nums[0]
+		dfs(0, nums[0]);
+
+		System.out.println(max);
+		System.out.println(min);
 	}
-	
-	
-	  /**
-     * idx : 다음에 사용할 숫자의 인덱스
-     * cur : 지금까지의 계산 결과
-     * plus, minus, mul, div : 앞으로 쓸 수 있는 연산자 개수
-     */
-	
-	
-	static void dfs(int idx, int cur, int plus, int minus, int mul, int div) {
-		if(idx == N) { // 숫자를 전부 다 쓴 경우
+
+	static void dfs(int idx, int cur) {
+		if(idx == N - 1) {
 			max = Math.max(max, cur);
 			min = Math.min(min, cur);
 			return;
 		}
-		
-		int next = nums[idx];
-		
-		// + 사용
-		if(plus > 0) {
-			dfs(idx + 1, cur + next, plus - 1, minus, mul, div);
-		}
-		
-		if(minus > 0) {
-			dfs(idx + 1, cur - next, plus, minus - 1, mul, div);
-			
-		}
-		
-		// * 연산 사용
-        if (mul > 0) {
-            dfs(idx + 1, cur * next, plus, minus, mul - 1, div);
-        }
 
-        // / 연산 사용 (Java int 나눗셈은 0 쪽으로 버림이라 그대로 써도 됨)
-        if (div > 0) {
-            dfs(idx + 1, cur / next, plus, minus, mul, div - 1);
-        }
+		int next = nums[idx + 1];
+
+		// 덧셈을 할경우
+		if(ops[0] > 0) {
+			ops[0]--;
+			dfs(idx + 1, cur + next);
+
+			ops[0]++; // 백트래킹
+
+		}
+
+		if(ops[1] > 0) {
+			ops[1]--;
+			dfs(idx + 1, cur - next);
+			ops[1]++;
+
+		}
+
+		if(ops[2] > 0) {
+			ops[2]--;
+			dfs(idx + 1, cur * next);
+			ops[2]++;
+		}
+
+		if(ops[3] > 0) {
+			ops[3]--;
+			int result;
+			if(cur < 0) {
+				result =  - (Math.abs(cur) / next);
+			} else {
+				result = cur / next;
+			}
+
+			dfs(idx + 1, result);
+			ops[3]++;
+		}
 	}
 }

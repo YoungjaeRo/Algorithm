@@ -1,60 +1,58 @@
 import java.io.*;
-import java.util.StringTokenizer;
+import java.util.*;
 
 public class Main {
+	static int N;
+	static int M;
 
-	static int N, M;
-	static int[] A;
-	static int[] B;
+	static int[] a;
+	static int[] b;
 
-	public static void main(String[] args) throws IOException {
+	public static void main(String[] args) throws  Exception{
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-		BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
 		StringTokenizer st = new StringTokenizer(br.readLine());
+		StringBuilder sb = new StringBuilder();
 
 		N = Integer.parseInt(st.nextToken());
 		M = Integer.parseInt(st.nextToken());
 
-		A = new int[N];
-		B = new int[M];
+		a = new int[N];
+		b = new int[M];
 
-		// A 배열 입력
 		st = new StringTokenizer(br.readLine());
-		for (int i = 0; i < N; i++) {
-			A[i] = Integer.parseInt(st.nextToken());
+		for(int i = 0; i < N; i++) {
+			a[i] = Integer.parseInt(st.nextToken());
 		}
 
-		// B 배열 입력
 		st = new StringTokenizer(br.readLine());
-		for (int i = 0; i < M; i++) {
-			B[i] = Integer.parseInt(st.nextToken());
+		for(int i = 0; i < M; i++) {
+			b[i] = Integer.parseInt(st.nextToken());
 		}
 
-		// 투 포인터 병합
-		int i = 0, j = 0;
-		StringBuilder sb = new StringBuilder();
+		int i = 0;
+		int j = 0;
 
-		while (i < N && j < M) {
-			if (A[i] <= B[j]) {
-				sb.append(A[i++]).append(" ");
+		while(i < N && j < M) {
+			if(a[i] <= b[j]) {
+				sb.append(a[i]).append(" ");
+				i++;
 			} else {
-				sb.append(B[j++]).append(" ");
+				sb.append(b[j]).append(" ");
+				j++;
 			}
 		}
 
-		// A 배열 남은 값
-		while (i < N) {
-			sb.append(A[i++]).append(" ");
+		// 나머지
+		while(i < N) {
+			sb.append(a[i]).append(" ");
+			i++;
 		}
 
-		// B 배열 남은 값
-		while (j < M) {
-			sb.append(B[j++]).append(" ");
+		while(j < M) {
+			sb.append(b[j]).append(" ");
+			j++;
 		}
 
-		bw.write(sb.toString());
-		bw.flush();
-		bw.close();
-		br.close();
+		System.out.println(sb);
 	}
 }

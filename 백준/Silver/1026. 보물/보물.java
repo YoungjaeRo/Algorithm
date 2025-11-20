@@ -1,44 +1,40 @@
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Scanner;
-import java.util.StringTokenizer;
+import java.util.*;
+import java.io.*;
 
 public class Main {
-	public static void main(String[] args) throws IOException {
-		//길이가 같은 정수 배열 A와 B가 있음
-		// 함수 S = A[0] * B[0] ....A[N-1] * B[N-1]의 합이 가장 작게 만들어라. 단! 배열 B는 움직이면 안됨
+	static int N;
 
-		//입력받기
+	public static void main(String[] args) throws Exception {
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 
-		int N = Integer.parseInt(br.readLine()); // 문자열로 입력을 받아오기 때문에,
-		int[] A = new int[N];
+		N = Integer.parseInt(br.readLine());
 
-		//내림차순 정렬 (Collections.reverseOrder()을 하려면, int가 아닌, Integer로 선언
-		Integer[] B = new Integer[N];
+		Integer [] a = new Integer[N];
+		Integer [] b = new Integer[N];
 
 		StringTokenizer st = new StringTokenizer(br.readLine());
-		StringTokenizer st2 = new StringTokenizer(br.readLine());
-
-		// 각 배열에
-		for(int i = 0; i < N; i++){
-			A[i] = Integer.parseInt(st.nextToken());
-			B[i] = Integer.parseInt(st2.nextToken());
+		for(int i = 0; i < N; i++) {
+			a[i] = Integer.parseInt(st.nextToken());
 		}
 
-		//A의 배열을 오름차순으로 정렬:
-		Arrays.sort(A);
-
-		//B의 배열은 내림차순으로 정렬
-		Arrays.sort(B,Collections.reverseOrder());
-
-		int sum = 0;
-		for(int i = 0; i< N; i++){
-			sum = sum + A[i] * B[i];
+		 st = new StringTokenizer(br.readLine());
+		for(int i = 0; i < N; i++) {
+			b[i] = Integer.parseInt(st.nextToken());
 		}
-		System.out.println(sum);
+
+		// A는 오름차순
+		Arrays.sort(a);
+
+		//B는 내림차순
+		Arrays.sort(b, Collections.reverseOrder());
+
+
+		int answer = 0;
+		for(int i = 0; i < N; i++) {
+			int mul = a[i] * b[i];
+			answer = answer + mul;
+		}
+
+		System.out.println(answer);
 	}
 }

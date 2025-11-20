@@ -1,56 +1,56 @@
 import java.util.*;
 import java.io.*;
 
+
 public class Main {
-	static int N, S;
+	static int N;
+	static int S;
 	static int[] arr;
-	static int count = 0;
+	static int count;
 
-	public static void main(String[] args) throws IOException {
-		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+	public static void main(String[] args) throws Exception {
+	BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 
-		// 첫줄 N, S
-		StringTokenizer st = new StringTokenizer(br.readLine());
-		N = Integer.parseInt(st.nextToken());
-		S = Integer.parseInt(st.nextToken());
+	StringTokenizer st = new StringTokenizer(br.readLine());
 
-		// 수열 입력받기
-		st = new StringTokenizer(br.readLine());
 
-		arr = new int[N];
-		for(int i = 0; i < N; i++) {
-			arr[i] = Integer.parseInt(st.nextToken());
+	N = Integer.parseInt(st.nextToken());
+	S = Integer.parseInt(st.nextToken());
 
-		}
+	arr = new int[N];
 
-		// DFS 시작
-		dfs(0, 0);
+	st = new StringTokenizer(br.readLine());
 
-		// 합이 0일때, 공집합도 포함되므로 제외
-		if(S == 0) {
-			count--;
+	for(int i = 0; i < N; i++) {
+		arr[i] = Integer.parseInt(st.nextToken());
 
-		}
+	}
+
+	count = 0;
+
+
+	backtrack(0, 0); // 현재 가리키고 있는 인덱스 번호, 지금까지 더한 수
+		
+	if(S == 0) {
+		count--;
+	}
 
 		System.out.println(count);
 	}
 
-
-	// idx는 현재 몇번째 숫자를 보고있는지 , sum은 지금까지 고른 숫자들의 합
-	// DFS로 부분수열을 구성하면서 합이 S인지 확인
-	static void dfs(int idx, int sum) {
-		if(idx == N) { // 모든 수를 다 탐색했을때,
-			if(sum == S) { //합이 S이면 카운트  + 1
+	static void backtrack(int idx, int cur) {
+		// 꼭 종료조건이 있어야함
+		if(idx == N) {
+			if(cur == S) {
 				count++;
 			}
 			return;
 		}
-		
-		// 현재 원소를 선택
-		dfs(idx + 1, sum + arr[idx]);
-		
-		// 현재 원소를 띄어넘고 다른 조합을 탐색
-		dfs(idx + 1, sum);
 
+		// 현재 숫자를 선택했을시
+		backtrack(idx  + 1, cur + arr[idx]);
+
+		// 현재 숫자를 선택하지 않았을때
+		backtrack(idx  + 1, cur);
 	}
 }

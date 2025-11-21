@@ -1,51 +1,52 @@
 import java.io.*;
 import java.util.*;
+
 public class Main {
 	/**
-	 * 순서가 중요하기 때문에, 순열이며, 백트래킹중 원복이 필요하다
+	 * 카드 n장을 놓음, 그중 k장을 선택함
+	 * 조합이며, 순서가 중요하다, + 선택할 수 있는 개수도 정해져 있음
+	 * 개수 = depth
+	 * 순서가 중요하기 때문에, 원복이 필요할거 같고, visited 배열도 필요해 보인다
 	 */
-	static int n;
-	static int k;
+	static int N; // 카드의 전체 개수
+	static int K; // 뽑을 카드 수
 
-	static int[] arr;
+	static int[] cards;
 	static boolean[] visited;
+	static HashSet<String> numbers = new HashSet<>();
 
-	static HashSet<String> set = new HashSet<>();
 
+	public static void main(String[] args) throws Exception {
+		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 
-	public static void main(String[] args) {
-		Scanner sc = new Scanner(System.in);
-		n = sc.nextInt();
-		k = sc.nextInt();
+		N = Integer.parseInt(br.readLine());
+		K = Integer.parseInt(br.readLine());
 
-		arr = new int[n];
-		visited = new boolean[n];
+		cards = new int[N];
+		visited = new boolean[N];
 
-		for(int i = 0; i < n; i++) {
-			arr[i] = sc.nextInt();
+		for(int i = 0; i < N; i++) {
+			StringTokenizer st = new StringTokenizer(br.readLine());
+			cards[i] = Integer.parseInt(st.nextToken());
 		}
-		dfs(0, "");
 
-		System.out.println(set.size());
+
+		dfs(0, ""); // 빈 문자열 ㅇㅇ
+		System.out.println(numbers.size());
 
 	}
-	// idx : 지금까지 몇 장 뽑았는지
-	// cur : 지금까지 이어 붙인 문자열 (숫자로 봐도 되지만 문자열이 편함)
-	static void dfs(int idx, String cur) {
 
-		// k장을 다 뽑았으면 Set에 추가하고 종료
-		if(idx == k) { // 종료 조건 꼭!
-			set.add(cur);
+	static void dfs(int depth, String cur) {
+		if(depth == K) {
+			numbers.add(cur);
 			return;
 		}
 
-		// 아직 더 뽑아야한다면, 안쓴 카드들 중 하나를 선택
-		for(int i = 0; i < n; i++) {
+		for(int i = 0; i < N; i++) {
 			if(!visited[i]) {
 				visited[i] = true;
-				dfs(idx + 1, cur + arr[i]); // 현재 문자열 뒤에 카드 값 이어 붙이기
+				dfs(depth + 1, cur + cards[i]);
 				visited[i] = false;
-
 			}
 		}
 	}

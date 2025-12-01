@@ -1,54 +1,43 @@
-
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStreamReader;
 
 public class Main {
-	public static void main(String[] args) throws IOException {
-		BufferedReader br =  new BufferedReader(new InputStreamReader(System.in));
-
-		int N = Integer.parseInt(br.readLine());
-		int[] stairs = new int[N + 1];
+	public static void main(String[] args) throws Exception {
+		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 
 
-		// 계단들의 값을 배열에 저장
+		int N = Integer.parseInt(br.readLine()); // 계단점수
+
+		int[] a = new int[N + 1];  // 1- based
+
 		for(int i = 1; i <= N; i++) {
-			stairs[i] = Integer.parseInt(br.readLine()); // 1번째 계단의 점수 입력
-
+			a[i] = Integer.parseInt(br.readLine());
 		}
 
-		// dp[i] : i번째 계단을 밟고 올라왔을때의 최대 점수
+		// N이 1,2,3 일때는, 예외적으로 바로 처리함
+		if(N == 1) {
+			System.out.println(a[1]);
+			return;
+		} else if(N == 2) {
+			System.out.println(a[1] + a[2]);
+			return;
+		} else if(N == 3) {
+			System.out.println(Math.max(a[1] + a[3], a[2] + a[3]));
+			return;
+		}
 
 		int[] dp = new int[N + 1];
 
-		// 초기조건 설정
-		if(N >= 1) {
-			dp[1] = stairs[1]; // 첫계단만 밟은 경우
-		}
-
-		if(N >= 2) {
-			dp[2] = stairs[1] + stairs[2];
-
-		}
-
-		if(N >= 3) { // 1칸 --> 2칸 or 2칸 --> 1칸 중 최대값으로 세팅
-			dp[3] = Math.max(stairs[1] + stairs[3], stairs[2] + stairs[3]);
-		}
+		// 기저값
+		dp[1] = a[1];
+		dp[2] = a[1] + a[2];
+		dp[3] = Math.max(a[1] + a[3], a[2] + a[3]);
 
 		for(int i = 4; i <= N; i++) {
-			// (1) i-2 → i로 오는 경우 (i-1은 건너뜀) --> 1칸, 2칸
-			// (2) i-3 → i-1 → i로 오는 경우 (i-2는 건너뜀) --> 2칸, 1칸
-
-			dp[i] = Math.max(
-				dp[i-2] + stairs[i],
-				dp[i-3] + stairs[i-1] + stairs[i]
-			);
+			dp[i] = Math.max(dp[i-2] + a[i], dp[i -3] + a[i-1] + a[i]);
 		}
 
 		System.out.println(dp[N]);
-
-
-
 
 	}
 }

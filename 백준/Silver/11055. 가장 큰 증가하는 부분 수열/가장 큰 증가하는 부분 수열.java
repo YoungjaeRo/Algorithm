@@ -1,55 +1,56 @@
-import java.util.*;
 import java.io.*;
-
+import java.util.*;
 
 public class Main {
 	/**
-	 * 점화식 : dp[i] --> i번째 원소로 끝나는 증가 부분수열의 최대합
-	 * dp[i] : A[i] + Math.max(dp[j]) 단, i > j, 그리고 A[i] > A[j]
-	 * 붙일게 없다면, dp[i] = A[i] 자기 자신만을 고른 경우
+	 * 해당 문제를 dp라고 생각했을때, dp[i] = i까지 포함된, 증가하는 수열의 가장 큰값
+	 *
 	 */
+
+	static int A; // 수열의 크기
+	static int[] arr; // 숫자를 저장해놓을 배열
+	static int[] dp; // dp전용 배열
+
+
 	public static void main(String[] args) throws Exception {
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 
-		int N = Integer.parseInt(br.readLine());
+		A = Integer.parseInt(br.readLine());
 
-		int[] A = new int[N]; // 각 배열의 위치와 숫자를 저장할 배열 생성
+		arr = new int[A];
+		dp = new int[A];
 
 		StringTokenizer st = new StringTokenizer(br.readLine());
 
-		for(int i = 0; i < N; i++) {
-			A[i] = Integer.parseInt(st.nextToken());
-
+		// 배열에 숫자 정보 저장
+		for(int i = 0; i < A; i++) {
+			arr[i] = Integer.parseInt(st.nextToken());
 		}
 
 		/**
-		 * dp[i] = i번째 원소 A[i]로 끝나는 증가 부분수열의 최대의 합
+		 * dp[i] = i까지 포함한, 증가하는 부분수열의 최대값
 		 */
 
-		int[] dp = new int[N];
+		for(int i = 0; i < A; i++) {
 
-		int answer = 0;
+			//일단은 본인의 arr[i]에 대응하는 값들로 세팅해준다
+			dp[i] = arr[i];
 
-		for (int i = 0; i < N; i++) {
-			// 촤소한 자기 자신하나로 수열을 만든다
-			dp[i] = A[i];
-
-
-			// i 앞쪽에서 A[i] 값보다 작은 값들만 연결함
 			for(int j = 0; j < i; j++) {
-				if(A[j] < A[i]) {
-					// j로 끝나는 최댓합에 A[i]를 붙여준다
-
-					dp[i] = Math.max(dp[i], dp[j] + A[i]);
+				if(arr[j] < arr[i]) { // 앞에 있는 값보다 더 크다면 --> 증가하는 수열의 조건
+					dp[i] = Math.max(dp[i], dp[j] + arr[i]);
 				}
 			}
+		}
 
-			// 전체 최댓값 갱신
+		int answer = 0;
+		for(int i = 0; i < A; i++) {
 			if(dp[i] > answer) {
 				answer = dp[i];
 			}
 		}
+
 		System.out.println(answer);
+
 	}
 }
-

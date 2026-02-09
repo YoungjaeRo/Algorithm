@@ -2,45 +2,51 @@ import java.io.*;
 import java.util.*;
 
 public class Main {
-	static int N; // 도시의 개수 (정점)
-	static int M; // 버스의 개수 (간선)
-
 	/**
-	 * 한도시에서 출발해서, 다른 도시에 도착, 최소비용 구하기 (비용 있음, 단 음수는 아님)
-	 * 무조건 다익스트라 알고리즘을 통해서 문제를 해결하면 된다.
+	 * 전형적인 다익스트라 문제인데 이제... 경로 출력을 곁들인
 	 */
 
+	static int n;
+	static int m;
+
+	static final int INF = Integer.MAX_VALUE;
+
+
+	// 다익스트라는 Node 클래스를 선언해서 푸는게 훨씬 수월하다
 	static class Node implements Comparable<Node> {
-		int idx; // 도시 번호
-		int cost; // 해당 도시까지의 비용
+		int idx;
+		int cost;
 
 		Node(int idx, int cost) {
 			this.idx = idx;
 			this.cost = cost;
 		}
 
-		// PQ 전용 짧은 거리를 기준으로 우선순위 부여
 		@Override
 		public int compareTo(Node o) {
-			return Integer.compare(this.cost, o.cost);
+			return this.cost - o.cost;
 		}
 	}
 
 	public static void main(String[] args) throws Exception {
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-		N = Integer.parseInt(br.readLine());
-		M = Integer.parseInt(br.readLine());
 
-		// 다익스트라 알고리즘은 무조건 인접리스트를 사용한다
-		List<Node> [] graph = new ArrayList[N + 1];
+		n = Integer.parseInt(br.readLine()); // 정점개수
+		m = Integer.parseInt(br.readLine());
 
-		for(int i = 1; i <= N; i++) {
+		// 다익스트라는 인접리스트
+		List<Node> [] graph = new ArrayList[n + 1];
+
+		for(int i = 1; i <= n; i++) {
 			graph[i] = new ArrayList<>();
+
 		}
 
-		// 간선에 대한 정보 입력 받기 (출발, 도착, 비용)
-		for(int i = 0; i < M; i++) {
-			StringTokenizer st = new StringTokenizer(br.readLine());
+		// 출발, 도착, 비용에 대한 값 입력받기
+		StringTokenizer st;
+
+		for(int i = 0; i < m; i++) {
+			st = new StringTokenizer(br.readLine());
 			int start = Integer.parseInt(st.nextToken());
 			int end = Integer.parseInt(st.nextToken());
 			int cost = Integer.parseInt(st.nextToken());
@@ -48,77 +54,74 @@ public class Main {
 			graph[start].add(new Node(end, cost));
 		}
 
-		// 시작과 도착 지점 입력 받기
-		StringTokenizer st = new StringTokenizer(br.readLine());
-		int from = Integer.parseInt(st.nextToken());
-		int to = Integer.parseInt(st.nextToken());
+		// 출발지와 도착지 정보 입력받기
+		st = new StringTokenizer(br.readLine());
 
-		// 다익스트라 알고리즘을 위한 PQ와 최소거리배열 선언
-		int[] dist = new int[N + 1];
-		int[] prev = new int[N + 1]; // 해당 지점으로 오기 직전에 있던 도시
+		int S = Integer.parseInt(st.nextToken());
+		int E = Integer.parseInt(st.nextToken());
 
-		// 충분히 큰 값으로 초기화를 해준다
-		final int INF = Integer.MAX_VALUE;
+		// 간 구간에 대한 비용 배열(dist) 선언
+		int[] dist = new int[n + 1];
+
+		// 경로 추적용 배열 선언
+		int[] prev = new int[n + 1];
+
 		Arrays.fill(dist, INF);
+		dist[S] = 0;
 
-		// -1로 다 초기화
-		Arrays.fill(prev, -1);
-
-		// 다익스트라 시작
+		// 다익스트라를 위한 PQ
 		PriorityQueue<Node> pq = new PriorityQueue<>();
-		dist[from] = 0;
-
-		// 시작 노드 부터 우선순위 큐에 삽입, 이때 누적 거리는 당연히 0
-		pq.offer(new Node(from, 0));
+		pq.offer(new Node(S, 0));
 
 		while(!pq.isEmpty()) {
 			Node cur = pq.poll();
 
-			int curCity = cur.idx;
+			int curIdx = cur.idx;
 			int curCost = cur.cost;
 
-			// 1차 필터링
-			if(curCost > dist[curCity]) {
+			if(curCost > dist[curIdx]) {
 				continue;
 			}
 
+			for(Node next : graph[curIdx]) {
+				int nextIdx = next.idx;
+				int nextCost = next.cost + curCost;
 
-			for(Node next : graph[curCity]) {
-				int nextCity = next.idx;
-				int nextCost = curCost + next.cost;
-
-				// 최단 거리 갱신
-				if(nextCost < dist[nextCity]) {
-					dist[nextCity] = nextCost;
-					prev[nextCity] = curCity; // 직전의 경로를 저장
-					pq.offer(new Node(nextCity, nextCost));
+				if(dist[nextIdx] > nextCost) {
+					dist[nextIdx] = nextCost;
+					prev[nextIdx] = curIdx;
+					pq.offer(new Node(nextIdx, nextCost));
 				}
 			}
 		}
 
-		// 경로 복원
-		ArrayList<Integer> path = new ArrayList<>();
 
-		int cur = to;
-		while(cur != -1) {
+		// 경로 복원 (끝에서부터 시작해서 나중에 reverse)
+		List<Integer> path = new ArrayList<>();
+		
+		int cur = E;
+		while(cur != 0) {
 			path.add(cur);
+			
+			if(cur == S) {
+				break;
+			}
+			
 			cur = prev[cur];
 		}
-
-		 // 이건 내림차순 Collections.sort(path, Collections.reverseOrder());
-
-		// 실제로 리스트 값을 뒤집기 (반전)
+		
+		// 정방향으로 재정렬
 		Collections.reverse(path);
-
+		
 		StringBuilder sb = new StringBuilder();
-		sb.append(dist[to]).append("\n");
+		sb.append(dist[E]).append("\n");
 		sb.append(path.size()).append("\n");
-
-		for(int city : path) {
-			sb.append(city).append(" ");
+		for(int v : path) {
+			sb.append(v).append(" ");
 		}
 
-		System.out.println(sb.toString());
+		System.out.println(sb);
+		
 
 	}
 }

@@ -2,23 +2,17 @@ import java.io.*;
 import java.util.*;
 
 public class Main {
-	/**
-	 * 벽은 한개까지 부시기 가능함
-	 * (1,1)에서 N,M까지 이동하는데, 최단 거리를 구해야한다.
-	 * 시작하는 칸과 끝나는 칸까지 포한해서 최단 거리의 길이를 구해야한다
-	 * 벽은 상, 하, 좌 우
-	 * 0 은 이동가능한 칸, 1은 불가능
-	 */
 
-	static int[] dx = {-1, 1, 0, 0};
-	static int[] dy = {0, 0, -1, 1};
-	static int N; // 세로 (행)
-	static int M; // 가로  (열)
+	static int N;
+	static int M;
+
+	static int[] dx = {0, 0, -1, 1};
+	static int[] dy = {-1, 1, 0, 0};
 
 	static int[][] map;
 
-	static boolean[][][] visited; // 마지막 배열에서 벽을 부쉈는지, 아닌지 여부 확인
-	static int[][][] dist; // 마지막 배열에서 벽을 부쉈는지, 아닌지 여부 확인
+	static int[][][] dist;
+	static boolean[][][] visited;
 
 
 	public static void main(String[] args) throws Exception {
@@ -30,67 +24,76 @@ public class Main {
 
 		map = new int[N][M];
 
+		dist = new int [2][N][M];
 		visited = new boolean [2][N][M];
 
-		dist = new int [2][N][M];
-
-		// 그래프에 값을 다 넣어줌
-
+		// 그래프 정보 입력
 		for(int i = 0; i < N; i++) {
-			String line = br.readLine(); // 문자열로 읽어오기 때문에, - '0' 필요함
+			String line = br.readLine();
 
 			for(int j = 0; j < M; j++) {
-				int num = line.charAt(j) - '0';
-				map[i][j] = num;
+				map[i][j] = line.charAt(j) - '0';
 			}
 		}
+
 		System.out.println(bfs());
 	}
 
 	static int bfs() {
-		ArrayDeque<int[]> q = new ArrayDeque<>();
-		q.offer(new int[] {0, 0, 0}); // broken = 0, x = 0, y = 0
+		Queue<int[]> q = new ArrayDeque<>();
 
-		visited[0][0][0] = true;
+		// 시작점의 거리와 방문 여부 처리
 		dist[0][0][0] = 1;
+		visited[0][0][0] = true;
+
+		q.offer(new int[]{0, 0, 0});
 
 		while(!q.isEmpty()) {
 			int[] cur = q.poll();
-			int broken = cur[0];
-			int x = cur[1];
-			int y = cur[2];
 
-			if(x == N - 1 && y == M - 1) {
-				return dist[broken][x][y];
+			int b = cur[0];
+			int cx = cur[1];
+			int cy = cur[2];
+
+			// 도착하면 바로 거리를 리턴
+			if(cx == N - 1 && cy == M - 1) {
+				return dist[b][cx][cy];
 			}
 
-			for(int i = 0; i < 4; i++) {
-				int nx = x + dx[i];
-				int ny = y + dy[i];
 
-				if(nx < 0 || nx >= N || ny < 0 || ny >= M) {
-					continue;
-				}
+				for(int d = 0; d < 4; d++) {
+					int nx = cx + dx[d];
+					int ny = cy + dy[d];
 
-				// 빈칸일때
-				if(map[nx][ny] == 0) {
-					if(!visited[broken][nx][ny]) {
-						visited[broken][nx][ny] = true;
-						dist[broken][nx][ny] = dist[broken][x][y] + 1;
-						q.offer(new int[]{broken, nx, ny}); // broken 그대로 유지
+					// 범위 검증
+					if(nx < 0 || ny < 0 || nx >= N || ny >= M) {
+						continue;
 					}
-				}
 
-				// 벽일때
-				else {
-					if(broken == 0 && !visited[1][nx][ny]) {
-						visited[1][nx][ny] = true;
-						dist[1][nx][ny] = dist[broken][x][y] + 1;
-						q.offer(new int[]{1, nx, ny});
+					// 빈칸이면 그대로 이동
+					if(map[nx][ny] == 0) {
+						if(!visited[b][nx][ny]) {
+
+							visited[b][nx][ny] = true;
+
+							dist[b][nx][ny] = dist[b][cx][cy] + 1;
+
+							q.offer(new int[]{b, nx, ny});
+						}
+
+						// 빈칸이 아니어서 부숴야함 & 부순 횟수가 아직 1회 미만
+					} else {
+						if(b < 1 && !visited[b + 1][nx][ny]) {
+							visited[b + 1][nx][ny] = true;
+
+							dist[b + 1][nx][ny] = dist[b][cx][cy] + 1;
+
+							q.offer(new int[]{b+ 1, nx, ny});
+						}
 					}
+
 				}
-			}
 		}
-    return -1;
+		return -1;
 	}
 }

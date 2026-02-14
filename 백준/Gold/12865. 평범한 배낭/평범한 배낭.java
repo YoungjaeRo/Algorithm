@@ -23,34 +23,38 @@ public class Main {
 		N = Integer.parseInt(st.nextToken()); // 물건의 개수
 		K = Integer.parseInt(st.nextToken()); // 최대 무게
 
-		int[] W = new int[N + 1]; // 무게
-		int[] V = new int[N + 1]; // 가치
-
-		// 1번부터 N번까지의 물건의 정보 입력 받기
-		for(int i = 1; i <= N; i++) {
-			st = new StringTokenizer(br.readLine());
-			W[i] = Integer.parseInt(st.nextToken());
-			V[i] = Integer.parseInt(st.nextToken());
-		}
-
-		// (바텀업)
-		// dp[i][w] = i번째 물건까지 고려했을 때, 무게 w로 얻을 수 있는 최대 가치
+		/**
+		 * i번째 물건까지 고려했을때, 무게 j에서의 최대가치
+		 */
 		int[][] dp = new int[N + 1][K + 1];
 
+		int[] weight = new int[N + 1];
+		int[] value = new int[N + 1];
+
 		for(int i = 1; i <= N; i++) {
+			st = new StringTokenizer(br.readLine());
 
-			for(int w = 0; w <= K; w++) {
+			weight[i] = Integer.parseInt(st.nextToken());
 
-				// 1.  물건을 넣지 않을때
-				dp[i][w] = dp[i - 1][w];
+			value[i] = Integer.parseInt(st.nextToken());
+		}
 
-				// 2. 물건을 넣을 수 있을때
-				if(w >= W[i]) {
-					int takeValue = dp[i - 1][w - W[i]] + V[i];
-					dp[i][w] = Math.max(dp[i][w], takeValue);
+		for(int i = 1; i <= N; i++) { // 물건 하나하나를 훑으면서
+
+			for(int j = 0; j <= K; j++) { // 무게 제한
+
+				// 지금 물건을 넣지 않을때,
+				dp[i][j] = dp[i -1][j];
+
+				// 해당 물건을 넣을 수 있을때,
+				if(weight[i] <= j) {
+					int takeValue = dp[i - 1][j - weight[i]] + value[i];
+					dp[i][j] = Math.max(dp[i][j], takeValue);
 				}
+
 			}
 		}
+
 		System.out.println(dp[N][K]);
 
 	}

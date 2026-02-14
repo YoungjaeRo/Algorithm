@@ -1,56 +1,47 @@
-
-
 import java.io.*;
 import java.util.*;
 
-
 public class Main {
-	/**
-	 * 해당 문제를 dp로 푼다고 할때 점화식을 어떻게 세우는 게 좋을까
-	 * dp[i] = i가 가장 마지막 순서인 길이
-	 */
 
-	static int A;
-	static int[] arr ; // 숫자 저장용 배열
-	static int[] dp; // dp 용 배열임
+	static int N;
 
 	public static void main(String[] args) throws Exception {
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+		N = Integer.parseInt(br.readLine());
 
-		A = Integer.parseInt(br.readLine());
-		arr = new int[A];
-		dp = new int[A];
+		int[] arr = new int[N + 1];
+		int[] dp = new int[N + 1];
 
 		StringTokenizer st = new StringTokenizer(br.readLine());
 
-		for(int i = 0; i < A; i++) {
+		for(int i = 1; i<= N; i++) {
 			arr[i] = Integer.parseInt(st.nextToken());
 		}
 
 		/**
-		 * dp 시작
+		 * dp[i] : i번째 원소를 마지막으로 하는, 가장 긴 부분 수열의 길이
 		 */
 
-		// 1. 일단은 자기자신(길이 1)로 초기화 해줌
-		
-		Arrays.fill(dp, 1);
-		
-		for(int i = 0; i < dp.length; i++) {
-			for(int j = 0; j < i; j++) {
-				
-				if(arr[j] < arr[i]) { // 수열 증가 조건을 충족한다면,
+		Arrays.fill(dp, 1); // 길이 1로 다 초기화
+
+		for(int i = 1; i <= N; i++) {
+
+			for(int j = 1; j < i; j++) {
+
+				// 증가하는 수열 조건이 된다면
+				if(arr[j] < arr[i]) {
 					dp[i] = Math.max(dp[i], dp[j] + 1);
 				}
 			}
 		}
 
-		int answer = 1;
-		
-		for(int num : dp) {
-			if(num > answer) {
-				answer = num;
+		int ans = 0;
+		for(int a : dp) {
+			if(a > ans) {
+				ans = a;
 			}
 		}
-		System.out.println(answer);
+
+		System.out.println(ans);
 	}
 }

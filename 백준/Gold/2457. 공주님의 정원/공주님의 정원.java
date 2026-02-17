@@ -1,60 +1,82 @@
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.util.*;
 import java.io.*;
-public class Main{
-		// 꽃이 피어야 하는 시기: 3월 1일 ~ 11월 30일 (매일 꽃이 한가지 이상 피어있어야 함)
-		// 심어지는 꽃들의 수는 최대한 적게
-		// 꽃이 피는 기간이 겹치는 꽃들 중 최대한 넓은 기간을 덮는 꽃을 선택해야 합니다.
-		static class Flower {
-			int start;
-			int end;
-			Flower(int start, int end) {
-				this.start = start;
-				this.end = end;
+import java.util.*;
+
+public class Main {
+	
+	static class Flower implements Comparable<Flower> {
+		
+		int start;
+		
+		int end;
+		
+		Flower(int start, int end) {
+			this.start = start;
+			this.end = end;
+		}
+		
+		@Override
+		public int compareTo(Flower o) {
+			if(this.start != o.start) {
+				return this.start - o.start;
+			} else {
+				return o.end - this.end;
 			}
 		}
+	}
+	
+	static int N;
 
-	public static void main(String[] args) {
-		Scanner sc = new Scanner(System.in);
-		int N = sc.nextInt(); // 꽃들의 최소 입력개수를 입력받음(최소 4개 꽃 안에서 커버해야함)
+	public static void main(String[] args) throws Exception {
+		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+		StringTokenizer st;
+		
+		N = Integer.parseInt(br.readLine());
+		
+		List<Flower> flowers = new ArrayList<>();
+		
+		for(int i = 0; i < N; i++) {
+			st = new StringTokenizer(br.readLine());
+			
+			int sm = Integer.parseInt(st.nextToken());
+			int sd = Integer.parseInt(st.nextToken());
+			int em = Integer.parseInt(st.nextToken());
+			int ed = Integer.parseInt(st.nextToken());
 
-		List<Flower> flowers  = new ArrayList<>();
-		for(int i = 0; i < N; i++){
-			// 시작 월/일을 쪼개서 입력받음
-			int startMonth = sc.nextInt();
-			int startDay = sc.nextInt();
+			int startDate = sm * 100 + sd;
+			int endDate = em * 100 + ed;
 
-			int start = startMonth * 100 + startDay;
-
-			// 끝 월/일을 쪼개서 입력받음
-			int endMonth = sc.nextInt();
-			int endDay = sc.nextInt();
-
-			int end = endMonth * 100 + endDay;
-
-			flowers.add(new Flower(start, end)); // 각 꽃의 시작일과 끝일을 저장
+			flowers.add(new Flower(startDate, endDate));
 		}
 
-		// 피는 날 기준 오름차순, 같은 날에 피는 경우 지는 날 기준 내림차순 정렬
-		flowers.sort((a,b) -> a.start == b.start ? b.end - a.end : a.start - b.start);
+		// 아까 지정해놓은 기준으로 정렬시작
+		Collections.sort(flowers);
 
-		int currentDate = 301;
-		int count = 0;
-		int i = 0;
-		while(currentDate <= 1130) {
-			int maxEnd = currentDate;
-			while(i < N && flowers.get(i).start <= currentDate){
-				maxEnd = Math.max(maxEnd, flowers.get(i).end);
-				i++;
+		// 가장 빠르게 시작하면서, 종료 시점이 가장 늦은 꽃들로 그리디 시작
+		int ans = 0;
+		int curDate = 301;
+		int idx = 0;
+		final int END = 1201;
+
+		while(curDate < 1201) {
+
+			int maxEnd = curDate;
+
+			//start <= curDate 인 후보들을 전부 보면서 maxEnd 갱신
+			while(idx < N && flowers.get(idx).start <= curDate) {
+				maxEnd = Math.max(maxEnd, flowers.get(idx).end);
+				idx++;
 			}
-			if (maxEnd == currentDate) { // 더 이상 덮을 수 없는 경우
+
+			if(curDate == maxEnd) {
 				System.out.println(0);
 				return;
-				}
-			currentDate = maxEnd;
-			count++;
 			}
-		System.out.println(count);
+
+			curDate = maxEnd;
+			ans++;
 		}
+        
+        System.out.println(ans);
+
+	}
 }

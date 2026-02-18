@@ -1,80 +1,83 @@
 import java.io.*;
 import java.util.*;
 
-
 public class Main {
 	/**
-	 * 서로 다른 L개의 알파벳 소문자 ㅇㅇ 일단 prev가 필요가 없다
-	 * 최소 한개의 모음(a,e,i,o,u) 과 최소 두개의 자음
+	 * 암호를 만드는데,
+	 * 서로 다른 L개의 알파벳 소문자들로 구성
 	 *
-	 * 알파벳 기준 오름차순
+	 * a,e,i,o,u에서 최소 한개
 	 *
-	 * C개중에서 4개를 고르기 (조합)
+	 * 최소 두개는 나머지 자음에서
+	 *
+	 * 알파벳이 오름차순으로 ㅇㅇ
+	 *
+	 * 일단은 조합문제임
+	 *
+	 * C개 중 L개를 선택해서 문제를 구하시오 ㅇㅇ
 	 */
 
-	static int L;
 	static int C;
+	static int L;
 
-	static char[] letters;
+	static char[] chars;
 	static char[] pick;
 
 	static StringBuilder sb = new StringBuilder();
 
 	public static void main(String[] args) throws Exception {
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-		StringTokenizer st = new StringTokenizer(br.readLine());
 
+		StringTokenizer st = new StringTokenizer(br.readLine());
 
 		L = Integer.parseInt(st.nextToken());
 		C = Integer.parseInt(st.nextToken());
 
-		letters = new char[C];
+		chars = new char[C];
 		pick = new char[L];
 
 		st = new StringTokenizer(br.readLine());
 
 		for(int i = 0; i < C; i++) {
-			letters[i] = st.nextToken().charAt(0);
+			chars[i] = st.nextToken().charAt(0); // 이렇게 해야, String에서 char로 변형이 된다
 		}
 
-		// 문자 기준 오름차순으로 정렬
-		Arrays.sort(letters);
+		Arrays.sort(chars);
 
-		backtrack(0, 0, 0, 0); // depth, start, 모음 개수, 자음 개수
+		backtrack(0, 0);
 
-		System.out.println(sb.toString());
+		System.out.println(sb);
 	}
 
-	static void backtrack(int depth, int start, int mo, int ja) {
 
+	static boolean isVowel(char c) {
+		return c == 'a' || c == 'e' || c == 'i' || c == 'o' || c == 'u';
+	}
+
+	static void backtrack(int depth, int start) {
 		if(depth == L) {
-			if(mo >= 1 && ja >= 2) {
-				for(char ans : pick) {
-					sb.append(ans);
+			int vowel = 0;
+			int consonant = 0;
+
+			for(char p : pick) {
+				if(isVowel(p)) {
+					vowel++;
+				} else {
+					consonant++;
 				}
-				sb.append("\n");
+			}
+
+			if(vowel >= 1 && consonant >= 2) {
+				sb.append(pick).append("\n");
 			}
 			return;
 		}
 
 
-		for(int i = start; i < C; i++) {
-			char ch = letters[i];
-			pick[depth] = ch;
+		for(int i = start; i < chars.length; i++) {
+			pick[depth] = chars[i];
 
-			// 모음 / 자음을 카운트를 갱신함
-			if(isVowel(ch)) {
-				backtrack(depth + 1, i + 1, mo + 1, ja);
-			} else {
-				backtrack(depth + 1, i + 1, mo, ja + 1);
-			}
-
+			backtrack(depth + 1, i + 1);
 		}
 	}
-
-	static boolean isVowel(char ch) {
-		return ch == 'a' || ch == 'e' || ch == 'i' || ch == 'o' || ch == 'u';
-
-	}
-
 }

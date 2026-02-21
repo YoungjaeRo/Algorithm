@@ -1,67 +1,70 @@
 import java.io.*;
 import java.util.*;
 
-
 class Solution {
-    // 입력 숫자들
-    private char[] digits;
     
-    // 각자리 사용 여부
-    private boolean[] used;
-    
-    // 만들수 있는 모든 정수 후보 중복 제거용 HashSet 사용
-    private Set<Integer> made = new HashSet<>();
+    static int[] digits;           // 숫자 배열
+    static boolean[] visited;      // 방문 체크
+    static Set<Integer> set = new HashSet<>();  // 중복 제거
     
     
     public int solution(String numbers) {
-       digits = numbers.toCharArray();
-       used = new boolean[numbers.length()];
+        int n = numbers.length();
+        digits = new int[n];
+        visited = new boolean[n];
         
-        //  백트래킹으로 길이 1 ~ N의 모든 수를 생성한다
-        dfs(0, 0);
+        //문자열 숫자로 받기
+        for(int i = 0; i < n; i++) {
+            digits[i] = numbers.charAt(i) - '0';
+        }
         
-        int count = 0;
-        for(int n : made) {
-            if(isPrime(n)) {
-                count++;
+        // 길이 1 ~ n까지 모두 생성하기
+        for(int len = 1; len <= n; len++) {
+            dfs(0, 0, len); // current, depth, len
+        }
+        
+        int ans = 0;
+        
+        for(int s : set) {
+            if(isPrime(s)) {
+                ans++;
             }
         }
         
-        return count;
+        return ans;
         
         
     }
-    // 백트래킹: 아직 안 쓴 자리(i)를 하나 골라 붙인다.
-    // curr: 지금까지 만든 정수값
-    public void dfs(int depth, int curr) {
-        // 길이가 1 이상이면, 일단 후보에 추가 (made)
-        if(depth > 0) {
-            made.add(curr);
+    
+    static void dfs(int current, int depth, int target) {
+        if(depth == target) {
+            set.add(current);
+            return;
         }
         
-        // 더 붙여서 긴 숫자 만들기
         for(int i = 0; i < digits.length; i++) {
             
-            if(used[i]) {
-                continue;
+            // 방문하지 않은것들에 대해서만 
+            if(!visited[i]) {
+                
+                visited[i] = true;
+                
+                dfs(10 * current + digits[i], depth + 1, target);
+                
+                // 순열은 꼭 원복을 해줘야 한다
+                visited[i] = false;
             }
-            
-            used[i] = true;
-            
-            int next = curr * 10 + (digits[i] - '0'); // 새 자리 추가함
-            dfs(depth + 1, next);
-            
-            used[i] = false; //  원복 (백트래킹)
-            
+                
         }
     }
     
-    public boolean isPrime(int n) {
+    // 이건 꼭 외워두자
+    static boolean isPrime(int n) {
         if(n < 2) {
-            return false; // 0과 1은 소수가 아님
+            return false;
         }
         
-        for(int i = 2; i <= Math.sqrt(n); i++) {
+        for(int i = 2; i * i <= n; i++) {
             if(n % i == 0) {
                 return false;
             }
@@ -69,5 +72,4 @@ class Solution {
         
         return true;
     }
-    
 }

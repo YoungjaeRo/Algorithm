@@ -1,50 +1,59 @@
+import java.io.*;
 import java.util.*;
 
 public class Main {
+	/**
+	 * 한 행에 퀸을 하나씩만 놓아야 된다 즉 row가 depth가 됨
+	 *
+	 * 결국 같은 행, 열, 대각선에 놓으면 안된다
+	 * 같은 대각선인지 파악하는 알고리즘은 Math.abs(열1 - 열2) == Math.abs(행1 - 행2)일때 이다.
+	 */
+
 	static int N;
+	static int[] board;
 	static int count = 0;
 
-	static boolean[] col;          // 열 체크
-	static boolean[] diag1;        // ↙ 대각선 체크 (row + col)
-	static boolean[] diag2;        // ↘ 대각선 체크 (row - col + N - 1)
+	public static void main(String[] args) throws Exception {
+	BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+	N = Integer.parseInt(br.readLine());
 
-	public static void main(String[] args) {
-		Scanner sc = new Scanner(System.in);
-		N = sc.nextInt();
+	// ex : board[0] = 1 의 뜻은 0행 1열에 퀸을 놓겠다라는 뜻
+	board = new int[N];
 
-		// boolean은 다 false로 초기화됨
+	backtrack(0); // 0행부터 놓기 시작
 
-		col = new boolean[N];
-		diag1 = new boolean[2 * N - 1];
-		diag2 = new boolean[2 * N - 1];
-
-		backtrack(0);
 		System.out.println(count);
 	}
 
 	static void backtrack(int row) {
-		if (row == N) {
-			count++;  // 모든 행에 퀸을 다 놓은 경우
+
+		// N - 1까지 퀸을 다 놓았으면, 경우의 수  + 1 해주기
+		if(row == N) {
+			count++;
 			return;
 		}
 
-		for (int c = 0; c < N; c++) {
-			// 퀸을 놓을 수 없는 위치면 continue
-			if (col[c] || diag1[row + c] || diag2[row - c + N - 1]) {
-				continue;
+		// 현재 row 레벨에서 어떤 col에 넣을 수 있는지 탐색
+		for(int col = 0; col < N; col++) {
+			if(isPossible(row, col)) {
+				board[row] = col;
+				backtrack(row + 1);
 			}
-
-			// 퀸을 놓는다
-			col[c] = true;
-			diag1[row + c] = true;
-			diag2[row - c + N - 1] = true;
-
-			backtrack(row + 1); // 다음 행으로 진행
-
-			// 백트래킹 (되돌리기)
-			col[c] = false;
-			diag1[row + c] = false;
-			diag2[row - c + N - 1] = false;
 		}
+	}
+
+	static boolean isPossible(int row, int col) {
+		// 이전 행들에 놓인 퀸들에 대한 검사
+		for(int r = 0; r < row; r++) {
+			// 같은 열이면 안됨
+			if(board[r] == col) {
+				return false;
+
+				// 같은 대각선이어도 안됨
+			} else if(Math.abs(row - r) == Math.abs(col - board[r])) {
+				return false;
+			}
+		}
+		return true;
 	}
 }

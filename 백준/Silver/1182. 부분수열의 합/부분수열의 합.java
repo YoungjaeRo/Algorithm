@@ -1,56 +1,53 @@
-import java.util.*;
 import java.io.*;
-
+import java.util.*;
 
 public class Main {
-	static int N;
-	static int S;
-	static int[] arr;
-	static int count;
+
+	static int N; // 정수의 개수
+	static int S; // 합
+
+	static int[] nums;
+
+	static int count = 0; // 조건을 만족하는 수열의 개수
 
 	public static void main(String[] args) throws Exception {
-	BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+		StringTokenizer st = new StringTokenizer(br.readLine());
 
-	StringTokenizer st = new StringTokenizer(br.readLine());
+		N = Integer.parseInt(st.nextToken());
+		S = Integer.parseInt(st.nextToken());
 
+		nums = new int[N];
 
-	N = Integer.parseInt(st.nextToken());
-	S = Integer.parseInt(st.nextToken());
+		st = new StringTokenizer(br.readLine());
 
-	arr = new int[N];
+		for(int i= 0; i < N; i++) {
+			nums[i] = Integer.parseInt(st.nextToken());
+		}
 
-	st = new StringTokenizer(br.readLine());
+		backtrack(0, 0);
 
-	for(int i = 0; i < N; i++) {
-		arr[i] = Integer.parseInt(st.nextToken());
-
-	}
-
-	count = 0;
-
-
-	backtrack(0, 0); // 현재 가리키고 있는 인덱스 번호, 지금까지 더한 수
+		// 공집합 제거
+		if(S == 0) count--;
 		
-	if(S == 0) {
-		count--;
-	}
-
+		
 		System.out.println(count);
 	}
 
-	static void backtrack(int idx, int cur) {
-		// 꼭 종료조건이 있어야함
+	// idx를 통해 수열을 다 돌면서, 어떠한 수들을 선택할것인지 정한다.
+	static void backtrack(int idx, int sum) {
+
 		if(idx == N) {
-			if(cur == S) {
+			if(sum == S) {
 				count++;
 			}
 			return;
 		}
 
-		// 현재 숫자를 선택했을시
-		backtrack(idx  + 1, cur + arr[idx]);
+		// 1. 해당 수를 선택할 경우
+		backtrack(idx + 1, sum + nums[idx]);
 
-		// 현재 숫자를 선택하지 않았을때
-		backtrack(idx  + 1, cur);
+		// 2.  해당 수를 선택하지 않을시
+		backtrack(idx + 1, sum);
 	}
 }

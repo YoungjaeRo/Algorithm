@@ -3,55 +3,62 @@ import java.util.*;
 
 public class Main {
 
-	static final int MAX = 100001;
+	static int N;
+	static int K;
+
+	static final int size = 100001;
+
+
 
 	public static void main(String[] args) throws Exception {
-	BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-	StringTokenizer st = new StringTokenizer(br.readLine());
+		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+		StringTokenizer st = new StringTokenizer(br.readLine());
 
-	int N = Integer.parseInt(st.nextToken());
-	int K = Integer.parseInt(st.nextToken());
+		N = Integer.parseInt(st.nextToken());
+		K = Integer.parseInt(st.nextToken());
 
-	int[] time = new int[MAX];
-	boolean[] visited = new boolean[MAX];
+		// 해당 거리까지 걸리는 시간을 저장해놓을 배열 선언
+		int[] time = new int[size];
 
-	Queue<Integer> q = new LinkedList<>();
-	visited[N] = true;
-	time[N] = 0;
+		// 각 걸리는 시간을 -1로 초기화
+		Arrays.fill(time, -1);
 
-	q.offer(N);
+		// 수빈이가 시작하는 점은 아예 시간이 걸리지 않기때문에, 0으로 초기화
+		time[N] = 0;
 
-	while(!q.isEmpty()) {
-		int cur = q.poll();
+		// BFS를 위한 큐 선언
+		Queue<Integer> q = new ArrayDeque<>();
 
-		if(cur == K) {
-			System.out.println(time[cur]);
-			break;
+
+		q.offer(N);
+
+		while(!q.isEmpty()) {
+			int cur = q.poll();
+
+			if(cur == K) {
+				System.out.println(time[cur]);
+				return;
+			}
+
+			int[] options = {cur - 1, cur + 1, 2 * cur};
+
+			for(int next : options) {
+				// 범위 검증 부터
+				if(next < 0 || next >= size) {
+					continue;
+				}
+
+				// 이미 방문한적이 있는것은
+				if(time[next] != -1) {
+					continue;
+				}
+
+				time[next] = time[cur] + 1;
+				q.offer(next);
+			}
 		}
 
-		int[] options = {cur - 1, cur + 1, cur * 2};
 
-		for(int next : options) {
 
-			// 1. 범위 밖이라면
-			if(next < 0 || next >= MAX) {
-				continue;
-			}
-
-			// 2. 이미 방문을 했다면,
-			if(visited[next]) {
-				continue;
-			}
-
-			// 3. 방문 처리
-			visited[next] = true;
-			
-			// 4. 시간 업데이트
-			time[next] = time[cur] + 1;
-			
-			// 5. 큐 삽입
-			q.offer(next);
-			}
-		}
 	}
 }

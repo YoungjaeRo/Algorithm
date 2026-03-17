@@ -3,72 +3,63 @@ import java.util.*;
 
 public class Main {
 	/**
-	 [이 문제에서 DP 설계]
-	 *  - dp[i][j]의 의미를 다음처럼 정의:
-	 *      "i번째 줄의 j번째 칸까지 내려올 때 만들 수 있는 '최대 합'
-	 *  - 원래 삼각형: triangle[i][j]
-	 *  - 최대 합을 저장하는 배열: dp[i][j]
+	 * 최소 또는 최대가 되는 경로를 추출하라고 했기 떄문에,
+	 * 작으 문제를 통해서 큰 문제의 해답을 찾을 수 있다 그래서 dp를 이용해 문제를 푼다
+	 *
+	 * dp[i][j] = i행 j열까지의 최대 경로 값
 	 */
 
-	static int N; // 삼각형의 크기 (줄 개수)
+	static int n; // 삼각형의 크기
+	static int[][] arr;
+
+	static int[][] dp;
+	static StringTokenizer st;
+
 	public static void main(String[] args) throws Exception {
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+		n = Integer.parseInt(br.readLine());
 
-		N = Integer.parseInt(br.readLine());
+		arr = new int[n][n];
+		dp = new int[n][n];
 
-		// 편의를 위해서 삼격형보단 N * N  배열을 만든후, 값을 저장
-		int[][] triangle = new int[N][N];
+		// 삼격형 값 정보 주입 받기
+		for(int i = 0; i < n; i++) {
+			st = new StringTokenizer(br.readLine());
 
-		//dp[i][j] : i 번째 줄 j번째 원소까지의 최대합
-
-		int[][] dp = new int[N][N];
-
-
-		// 1. 삼각형 입력 받기
-		for(int i = 0; i < N; i++) {
-			StringTokenizer st = new StringTokenizer(br.readLine());
-
-			//  j는 0~ i까지만 값이 존재한다
 			for(int j = 0; j <= i; j++) {
-				triangle[i][j] = Integer.parseInt(st.nextToken());
+				arr[i][j] = Integer.parseInt(st.nextToken());
 			}
 		}
 
+		// dp 기저값 세팅하기
+		dp[0][0] = arr[0][0];
 
-		// 2. DP 기저값 설정
-
-		dp[0][0] = triangle[0][0];
-
-
-		// dp 점화식 값 채우기 시작
-		for(int i = 1; i < N; i++) { // 0번째, 맨 꼭대기는 채웠기 때문에, 1번째 줄부터 채우기 시작
+		for(int i = 1; i < n; i++) {
 
 			for(int j = 0; j <= i; j++) {
 
-				// 1. 맨 왼쪽 칸
+				// 각 위치에 따른 최대값을 넣어주는 메커니즘이 다르다
+
+				// 가장 왼쪽
 				if(j == 0) {
-					dp[i][j] = dp[i - 1][j] + triangle[i][j];
-				}
+					dp[i][j] = dp[i - 1][0] + arr[i][j];
 
-				// 2. 맨 오른쪽 칸
-				else if(j == i) {
-					dp[i][j] = dp[i - 1][j - 1] + triangle[i][j];
+					// 가장 오른쪽
+				} else if(j == i) {
+					dp[i][j] = dp[i - 1][j - 1] + arr[i][j];
 				}
-
-				// 3. 그 외 나머지
+				// 그외는 양갈래 중 가장 큰 값을 입력 받아야 한다/
 				else {
-					dp[i][j] = Math.max(dp[i - 1][j - 1], dp[i - 1][j]) + triangle[i][j];
+					dp[i][j] = Math.max(dp[i - 1][j - 1], dp[i - 1][j]) + arr[i][j];
 				}
 			}
 		}
 
 		int max = Integer.MIN_VALUE;
 
-		for(int i = 0; i < dp.length; i++) {
-			for(int j = 0; j < dp.length; j++) {
-				if(dp[i][j] > max) {
-					max = dp[i][j];
-				}
+		for(int i = 0; i < n; i++) {
+			if(dp[n - 1][i] > max) {
+				max = dp[n - 1][i];
 			}
 		}
 

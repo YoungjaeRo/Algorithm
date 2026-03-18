@@ -2,52 +2,52 @@ import java.io.*;
 import java.util.*;
 
 public class Main {
+	static int N;
+	static int S;
 
-	static int N; // 정수의 개수
-	static int S; // 합
-
-	static int[] nums;
-
-	static int count = 0; // 조건을 만족하는 수열의 개수
+	static int[] numbers;
+	static int[] pick;
+	static int count = 0;
 
 	public static void main(String[] args) throws Exception {
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+
 		StringTokenizer st = new StringTokenizer(br.readLine());
 
 		N = Integer.parseInt(st.nextToken());
 		S = Integer.parseInt(st.nextToken());
 
-		nums = new int[N];
+		numbers = new int[N];
 
 		st = new StringTokenizer(br.readLine());
 
-		for(int i= 0; i < N; i++) {
-			nums[i] = Integer.parseInt(st.nextToken());
+		for(int i = 0; i < N; i++) {
+			numbers[i] = Integer.parseInt(st.nextToken());
 		}
 
 		backtrack(0, 0);
 
-		// 공집합 제거
+		// 만드려는 숫자가 0일 경우엔, 아예 아무것도 선택을 안할 수 도 있기 때문에, 이 경우엔 공집합 경우를 빼준다.
+
 		if(S == 0) count--;
-		
-		
+
 		System.out.println(count);
+
 	}
 
-	// idx를 통해 수열을 다 돌면서, 어떠한 수들을 선택할것인지 정한다.
-	static void backtrack(int idx, int sum) {
-
-		if(idx == N) {
+	static void backtrack(int depth, int sum) {
+		// 끝까지 다 탐색해봤다면
+		if(depth == N) {
 			if(sum == S) {
 				count++;
 			}
 			return;
 		}
 
-		// 1. 해당 수를 선택할 경우
-		backtrack(idx + 1, sum + nums[idx]);
+		// 현재 인덱스의 숫자를 선택했을 시
+		backtrack(depth + 1, sum + numbers[depth]);
 
-		// 2.  해당 수를 선택하지 않을시
-		backtrack(idx + 1, sum);
+		// 현재 인덱스의 숫자를 선택하지 않았을 시
+		backtrack(depth + 1, sum);
 	}
 }

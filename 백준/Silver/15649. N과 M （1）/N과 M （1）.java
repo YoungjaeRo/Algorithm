@@ -6,7 +6,6 @@ public class Main {
 	static int N;
 	static int M;
 
-	static int[] arr;
 	static boolean[] visited;
 
 	static int[] answer;
@@ -20,16 +19,8 @@ public class Main {
 		N = Integer.parseInt(st.nextToken());
 		M = Integer.parseInt(st.nextToken());
 
-		arr = new int[N];
-		visited = new boolean[N];
-
+		visited = new boolean[N + 1];
 		answer = new int[M];
-
-		for(int i = 0; i < N; i++) {
-			arr[i] = i + 1;
-		}
-
-		Arrays.sort(arr);
 
 		backtrack(0);
 		System.out.println(sb);
@@ -37,21 +28,26 @@ public class Main {
 
 	static void backtrack(int depth) {
 		if(depth == M) {
-			for(int num : answer) {
-				sb.append(num).append(" ");
+			for(int p : answer) {
+				sb.append(p).append(" ");
 			}
 			sb.append("\n");
 			return;
 		}
 
-		for(int i = 0; i < N; i++) {
+		for(int i = 1; i <= N; i++) {
+			// 아직 선택한적이 없는 숫자라면
 			if(!visited[i]) {
 				visited[i] = true;
-				answer[depth] = arr[i];
+				answer[depth] = i;
 
 				backtrack(depth + 1);
+				// 꼭 다음 선택지(리셋후 시작)을 위해 원복을 해줘야 한다
 				visited[i] = false;
+
 			}
 		}
+
+
 	}
 }

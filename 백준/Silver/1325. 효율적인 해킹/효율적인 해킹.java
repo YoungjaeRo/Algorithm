@@ -1,80 +1,92 @@
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.ArrayDeque;
-import java.util.ArrayList;
-import java.util.Queue;
-import java.util.StringTokenizer;
+import java.io.*;
+import java.util.*;
 
 public class Main {
-	static int N, M;
-	static ArrayList <Integer>[] arr;
-	static boolean isVisited[];
-	static int max;
-	static int cntArr[];
-	
-	static void DFS(int start) {
-		isVisited[start] = true;
-		for (int i : arr[start]) {
-			if (isVisited[i]) continue;
-			cntArr[i]++; // i가 해킹할 수 있는 숫자 증가
-			DFS(i);
+	/**
+	 * 가중치가 1로 동일하기 때문에, BFS로 푸는게 더 효율적이다
+	 */
+
+	static int N;
+	static int M;
+	static List<Integer> [] graph;
+
+	// 각 지점이 몇개와 연결되어 있는지를 저장하는 배열
+	static int[] cnts;
+
+	static boolean[] visited; // BFS를 위한 방문여부 배열
+
+	static StringBuilder sb = new StringBuilder();
+
+
+	public static void main(String[] args) throws Exception {
+		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+		StringTokenizer st = new StringTokenizer(br.readLine());
+
+		N = Integer.parseInt(st.nextToken());
+		M = Integer.parseInt(st.nextToken());
+
+		cnts = new int[N + 1];
+
+		graph = new ArrayList[N + 1];
+
+		// 인접리스트 초기화
+		for(int i = 1; i <= N; i++) {
+			graph[i] = new ArrayList<>();
+
 		}
+
+
+		// 연결 정보 주입
+		for(int i = 0; i < M; i++) {
+			st = new StringTokenizer(br.readLine());
+
+			int a = Integer.parseInt(st.nextToken());
+			int b = Integer.parseInt(st.nextToken());
+			
+			graph[b].add(a);
+		}
+
+		for(int i = 1; i <= N; i++) {
+			bfs(i);
+		}
+
+		int max = 0;
+
+
+		for(int i = 1; i <= N; i++) {
+			max = Math.max(max, cnts[i]);
+		}
+		
+		for(int i = 1; i <= N; i++) {
+			if(cnts[i] == max) {
+				sb.append(i).append(" ");
+			}
+		}
+
+		System.out.println(sb);
+
 	}
-	
-	static void BFS(int start) {
-		Queue <Integer> que = new ArrayDeque<Integer>();
+
+	static void bfs(int start) {
+		Queue<Integer> q = new ArrayDeque<>();
+		visited = new boolean[N + 1];
 		
-		que.add(start);
-		isVisited[start] = true;
-		
-		while(!que.isEmpty()) {
-			int now = que.poll();
-			for (int i : arr[now]) {
-				if (isVisited[i]) continue;
-				cntArr[i]++; // i가 해킹할 수 있는 숫자 증가
-				isVisited[i] = true;
-				que.add(i);
+		visited[start] = true;
+		q.offer(start);
+
+		while(!q.isEmpty()) {
+			int cur = q.poll();
+
+			for(int next : graph[cur]) {
+				if(!visited[next]) {
+					visited[next] = true;
+
+					// 연결되어 있기 때문에 값 + 1
+					cnts[start]++;
+
+					q.offer(next);
+				}
 			}
 		}
 	}
-	
-
-	public static void main(String[] args) throws IOException {
-		BufferedReader bf = new BufferedReader(new InputStreamReader(System.in));
-		StringTokenizer st = new StringTokenizer(bf.readLine());
-		
-		N = Integer.parseInt(st.nextToken());
-		M = Integer.parseInt(st.nextToken());
-		
-		isVisited = new boolean[N+1];
-		cntArr = new int[N+1];
-		
-		// 신뢰 관계 입력
-		arr = new ArrayList[N+1];
-		for (int i=0; i<N+1; i++) arr[i] = new ArrayList <Integer>();
-		for (int i=0; i<M; i++) {
-			st = new StringTokenizer(bf.readLine());
-			int a = Integer.parseInt(st.nextToken());
-			int b = Integer.parseInt(st.nextToken());
-			arr[a].add(b); // a가 b를 신뢰, a는 b에게 해킹 당할 수 있음
-		}
-		
-		// 1번부터 N번까지 search
-		for (int i=1; i<N+1; i++) {
-			isVisited = new boolean[N+1];
-			//DFS(i); // 메모리↓ 시간↑
-			BFS(i); // 메모리↑ 시간↓
-			
-		}
-		
-		// 해킹할 수 있는 최댓값 찾기
-		for (int i=1; i<N+1; i++) {
-			if (max<cntArr[i]) max = cntArr[i];
-		}
-		
-		// 최댓값인 컴퓨터 출력
-		for (int i=1; i<N+1; i++) if (max == cntArr[i]) System.out.print(i+" ");
-	}
-
 }

@@ -1,13 +1,12 @@
-import java.util.*;
 import java.io.*;
+import java.util.*;
 
 public class Main {
-	static int N;
-	static int S;
 
-	static int[] numbers;
+	static int N; // 길이
+	static int S; // 목표 합
 
-	static int answer = Integer.MAX_VALUE;
+	static int[] arr;
 
 	public static void main(String[] args) throws Exception {
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
@@ -16,38 +15,33 @@ public class Main {
 		N = Integer.parseInt(st.nextToken());
 		S = Integer.parseInt(st.nextToken());
 
-		numbers = new int[N];
+		arr = new int[N];
 
 		st = new StringTokenizer(br.readLine());
 
 		for(int i = 0; i < N; i++) {
-			numbers[i] = Integer.parseInt(st.nextToken());
+			arr[i] = Integer.parseInt(st.nextToken());
 		}
-
-		// 슬라이딩 윈도우 시작
+		
 		int left = 0;
-		int right = 0;
 		int sum = 0;
-
-		while(true) {
-			if(sum >= S) {
-				int len = right - left;
-				answer = Math.min(answer, len);
-				sum = sum - numbers[left];
+		int minLen = Integer.MAX_VALUE;
+		
+		for(int right = 0; right < N; right++) {
+			sum = sum + arr[right];
+			
+			while(sum >= S) {
+				minLen = Math.min(minLen, right - left + 1);
+				
+				// 더 짧은 길이 도전
+				sum = sum - arr[left];
 				left++;
-
-			} else {
-				if(right == N) {
-					break;
-				}
-				sum = sum + numbers[right];
-				right++;
+				
 			}
+			
 		}
-		if(answer == Integer.MAX_VALUE) {
-			System.out.println(0);
-		} else {
-			System.out.println(answer);
-		}
+
+		System.out.println(minLen == Integer.MAX_VALUE ? 0 : minLen);
+		
 	}
 }

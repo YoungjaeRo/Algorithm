@@ -2,19 +2,26 @@ import java.io.*;
 import java.util.*;
 
 public class Main {
+	/**
+	 * 0은 이동할 수 있는 칸
+	 * 1은 벽
+	 *
+	 * 벽을 K개까지 부수고 이동할 수 있음
+	 */
 	static int N;
 	static int M;
 	static int K;
 
-	static int[][] map;
-
-	static int[][][] dist;
-	static boolean[][][] visited;
-
 	static int[] dx = {0, 0, -1, 1};
 	static int[] dy = {-1, 1, 0, 0};
 
+	static int[][] map;
+	static boolean[][][] visited;
+
+	static int[][][] dist;
+
 	public static void main(String[] args) throws Exception {
+
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 		StringTokenizer st = new StringTokenizer(br.readLine());
 
@@ -23,97 +30,92 @@ public class Main {
 		K = Integer.parseInt(st.nextToken());
 
 		map = new int[N][M];
-		dist = new int[K  + 1][N][M];
-		visited = new boolean[K + 1][N][M];
+
+		visited = new boolean[N][M][K + 1];
+		dist = new int[N][M][K + 1];
 
 
-		// 그래프 정보 주입해주기
 		for(int i = 0; i < N; i++) {
+
 			String line = br.readLine();
 
 			for(int j = 0; j < M; j++) {
-				int num = line.charAt(j) - '0';
-				map[i][j]= num;
+				map[i][j] = line.charAt(j) - '0';
 			}
 		}
 
-		int answer = bfs(0, 0, 0);
+		bfs(0, 0, 0);
 
-		System.out.println(answer);
+
 	}
 
-	static int bfs(int broke, int x, int y) {
-		ArrayDeque<int[]> q = new ArrayDeque<>();
+	static void bfs(int x, int y, int broke) {
+		Queue<int[]> q = new ArrayDeque<>();
 
-		// 시작점도 거리로 쳐주기 때문에
-		dist[0][0][0] = 1;
-		visited[0][0][0] = true;
+		visited[x][y][broke] = true;
+		dist[x][y][broke] = 1;
 
-		q.offer(new int[]{0, 0, 0});
+		q.offer(new int[]{x, y, broke});
 
 		while(!q.isEmpty()) {
 			int[] cur = q.poll();
 
-			int curBroke = cur[0];
-			int curX = cur[1];
-			int curY = cur[2];
+			 int cx = cur[0];
+			 int cy = cur[1];
+			 int curBroke = cur[2];
 
-			// 도착하면 종료
-			if(curX == N - 1 && curY == M - 1) {
-				return dist[curBroke][curX][curY];
-			}
+			 if(cx == N - 1 && cy == M - 1) {
+				 System.out.println(dist[cx][cy][curBroke]);
+				 return;
+			 }
 
-			for(int d = 0; d < 4; d++) {
-				int nextX = curX + dx[d];
-				int nextY = curY + dy[d];
 
-				// 1. 무조건 범위부터 확인
-				if(outRange(nextX, nextY)) {
-					continue;
-				}
+			 for(int d = 0; d < 4; d++) {
 
-				// 일단 벽을 부수지 않고 그냥 이동을 할 경우
-				if(map[nextX][nextY] == 0) {
+				 int nx = cx + dx[d];
+				 int ny = cy + dy[d];
 
-					// 방문 여부 확인
-					if(visited[curBroke][nextX][nextY]) {
-						continue;
-					}
+				 // 범주 검증부터
+				 if(nx < 0 || ny < 0 || nx >= N || ny >= M) {
+					 continue;
+				 }
 
-					//방문처리
-					visited[curBroke][nextX][nextY] = true;
+				 // 벽을 부술 필요가 없을때
+				 if(map[nx][ny] != 1) {
 
-					//거리 업데이트
-					dist[curBroke][nextX][nextY] = dist[curBroke][curX][curY] + 1;
-					q.offer(new int[]{curBroke, nextX, nextY});
-				} else {
-					// 벽을 부수고 이동해야할 경우
+					 // 방문한적도 없음
+					 if(!visited[nx][ny][curBroke]) {
+						 visited[nx][ny][curBroke] = true;
 
-					// 벽을 부순 횟수가 K번 이상이라면 스킵
-					if(curBroke >= K) {
-						continue;
-					}
+						 dist[nx][ny][curBroke] = dist[cx][cy][curBroke] + 1;
+						 q.offer(new int[]{nx, ny, curBroke});
+					 }
+				 } else {
+					 // 벽을 부숴야 할때,
 
-					if(visited[curBroke + 1][nextX][nextY]) {
-						continue;
-					}
 
-					// 방문처리
-					visited[curBroke + 1][nextX][nextY] = true;
+					 // 이미 벽을 부술 수 있는 횟수를 다 사용했다면, 스킵
+					 if(curBroke == K) {
+						 continue;
+					 }
 
-					//거리 업데이트
-					dist[curBroke + 1][nextX][nextY] = dist[curBroke][curX][curY] + 1;
+					 int nextBroke = curBroke + 1;
 
-					q.offer(new int[]{curBroke + 1, nextX, nextY});
-				}
+					 if(!visited[nx][ny][nextBroke]) {
+						 visited[nx][ny][nextBroke] = true;
 
-			}
+						 dist[nx][ny][nextBroke] = dist[cx][cy][curBroke] + 1;
+
+						 q.offer(new int[]{nx, ny, nextBroke});
+
+					 }
+
+				 }
+			 }
 
 		}
-		return -1;
-	}
 
-	static boolean outRange(int x, int y) {
-		return x < 0 || x >= N || y < 0 || y >= M;
+		// 끝까지 못가면
+		System.out.println(-1);
 	}
 }

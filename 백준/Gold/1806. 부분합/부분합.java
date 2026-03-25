@@ -3,8 +3,11 @@ import java.util.*;
 
 public class Main {
 
-	static int N; // 길이
-	static int S; // 목표 합
+	/**
+	 * 연속된 수들이기 때문에, 백트래킹이 아니라, 투 포인터로 해당 문제를 풀어야한다.
+	 */
+	static int N;
+	static int S;
 
 	static int[] arr;
 
@@ -22,26 +25,37 @@ public class Main {
 		for(int i = 0; i < N; i++) {
 			arr[i] = Integer.parseInt(st.nextToken());
 		}
-		
+
 		int left = 0;
+		int min = Integer.MAX_VALUE;
 		int sum = 0;
-		int minLen = Integer.MAX_VALUE;
-		
+
+
+
 		for(int right = 0; right < N; right++) {
+
+			// 계속해서 오른쪽으로 늘려가며 누적합
 			sum = sum + arr[right];
-			
+
+			// 더 짧은 길이도 가능한지 줄여보기
 			while(sum >= S) {
-				minLen = Math.min(minLen, right - left + 1);
-				
-				// 더 짧은 길이 도전
+
+				int length = right - left + 1;
+
+				min = Math.min(min, length);
+
 				sum = sum - arr[left];
+
 				left++;
-				
 			}
 			
 		}
-
-		System.out.println(minLen == Integer.MAX_VALUE ? 0 : minLen);
 		
+		if(min == Integer.MAX_VALUE) {
+			System.out.println(0);
+		} else {
+			System.out.println(min);
+		}
 	}
+
 }

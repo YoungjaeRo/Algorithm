@@ -5,46 +5,56 @@ public class Main {
 
 	static int N; // 수열의 크기
 
-	/**
-	 * 증가하는 부분 수열 중 합이 가장 큰 것
-	 * dp[i] = i 번째 원소를 마지막으로 했을때, 얻을 수 있는 최댓값
-	 */
-
-	static int[] arr;
 	static int[] dp;
+	static int[] arr;
+
+	/**
+	 * dp[N] = N번째 원소가 마지막인 가장 큰 값
+	 */
 
 	public static void main(String[] args) throws Exception {
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+		StringTokenizer st;
 
 		N = Integer.parseInt(br.readLine());
 
-		dp = new int[N + 1];
-		arr = new int[N + 1];
+		dp = new int[N];
+		arr = new int[N];
 
-		StringTokenizer st = new StringTokenizer(br.readLine());
+		st = new StringTokenizer(br.readLine());
 
-		for(int i = 1; i <= N; i++) {
-			arr[i] = Integer.parseInt(st.nextToken());
+		for(int i = 0; i < N; i++) {
+
+		arr[i] = Integer.parseInt(st.nextToken());
+
 		}
 
-		int ans = 0;
+		// 기저값 세팅 : 처음엔 본인 인덱스의 값으로
+		for(int i = 0; i < N; i++) {
+			dp[i] = arr[i];
+		}
 
-		// dp 시작
-		for(int i = 1; i <= N; i++) {
+		// 점화식 실행
+		for(int i = 0; i < N; i++) {
 
-			dp[i] = arr[i]; // 각자 본인으로 초기화
+			for(int j = 0; j < i; j++) {
 
-			for(int j = 1; j < i; j++) {
-
-				// 증가 수열 조건과 맞는다면,
-				if(arr[j] < arr[i]) {
+				// 증가하는 수열 조건
+				if(arr[i] > arr[j]) {
 					dp[i] = Math.max(dp[i], dp[j] + arr[i]);
 				}
 			}
-
-			ans = Math.max(ans, dp[i]);
 		}
 
-		System.out.println(ans);
+		int max = Integer.MIN_VALUE;
+
+		for(int m : dp) {
+			if(m > max) {
+				max = m;
+			}
+		}
+
+		System.out.println(max);
+
 	}
 }

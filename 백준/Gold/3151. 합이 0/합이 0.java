@@ -57,7 +57,7 @@ public class Main {
 						int leftV = students[left];
 						int rightV = students[right];
 
-						while(left < right && leftV == students[left]) {
+						while(left <= right && leftV == students[left]) {
 							leftCnt++;
 							left++;
 						}

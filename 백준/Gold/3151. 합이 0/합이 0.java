@@ -8,11 +8,14 @@ public class Main {
 
 	public static void main(String[] args) throws Exception {
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+
 		N = Integer.parseInt(br.readLine());
 
 		students = new int[N];
+
 		StringTokenizer st = new StringTokenizer(br.readLine());
-		for (int i = 0; i < N; i++) {
+
+		for(int i = 0; i < N; i++) {
 			students[i] = Integer.parseInt(st.nextToken());
 		}
 
@@ -20,45 +23,54 @@ public class Main {
 
 		long answer = 0;
 
-		for (int i = 0; i < N - 2; i++) {
+		// 일단 선수 한명은 고정
+		for(int i = 0; i < N - 2; i++) {
+
 			int left = i + 1;
 			int right = N - 1;
 
-			while (left < right) {
+			while(left < right) {
 				int sum = students[i] + students[left] + students[right];
 
-				if (sum == 0) {
-
-					// 케이스 A: left~right가 전부 같은 값
-					if (students[left] == students[right]) {
-						int num = right - left + 1;
-						answer += (long) num * (num - 1) / 2;
-						break; 
-					}
-
-					// 케이스 B: left 값 묶음 개수 세기
-					int leftValue = students[left];
-					int leftCount = 0;
-					while (left <= right && students[left] == leftValue) {
-						left++;
-						leftCount++;
-					}
-
-					// 케이스 B: right 값 묶음 개수 세기
-					int rightValue = students[right];
-					int rightCount = 0;
-					while (right >= left && students[right] == rightValue) {
-						right--;
-						rightCount++;
-					}
-
-					answer += (long) leftCount * rightCount;
-				}
-				else if (sum < 0) {
+				if(sum < 0) {
 					left++;
-				}
-				else {
+
+				} else if(sum > 0) {
 					right--;
+
+				} else {
+					// 합이 0일때
+
+					// 1. 왼쪽부터, 오른쪽 값이 다 같을 경우 -- > 조합 공식
+					if(students[left] == students[right]) {
+						int len = right - left + 1;
+						answer = answer + (long) (len * (len - 1) / 2);
+
+						break;
+
+					} else {
+						// 2. 왼쪽 값과 오른쪽 값이 다를때, 최대한 같은 개수 구한뒤 곱해주기
+
+						int leftCnt = 0;
+						int rightCnt = 0;
+
+						int leftV = students[left];
+						int rightV = students[right];
+
+						while(left < right && leftV == students[left]) {
+							leftCnt++;
+							left++;
+						}
+
+						while(right >= left && rightV == students[right]) {
+							rightCnt++;
+							right--;
+						}
+
+						answer = answer + leftCnt * rightCnt;
+
+					}
+
 				}
 			}
 		}
